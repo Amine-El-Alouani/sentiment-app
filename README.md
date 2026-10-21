@@ -8,8 +8,11 @@ Ce dépôt grandit chaque semaine ; la semaine 1 met en place le cadrage et l'en
 ```bash
 python -m venv .venv
 source .venv/bin/activate        # Windows PowerShell : .venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+python -m pip install pandas scikit-learn pytest
 ```
+
+Pour installer l'ensemble des dépendances des semaines suivantes, utilisez
+`python -m pip install -r requirements.txt` lorsque ces fonctionnalités sont nécessaires.
 
 Puis vérifiez :
 

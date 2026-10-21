@@ -4,19 +4,20 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-echo "1/4 Vérification de Python 3.11"
-PY=$(command -v python3.11 || command -v python3 || command -v python)
+echo "1/4 Vérification de Python"
+PY=$(command -v python3 || command -v python)
 "$PY" --version
 
 echo "2/4 Création de l'environnement virtuel"
 [ -d .venv ] || "$PY" -m venv .venv
-# shellcheck disable=SC1091
-source .venv/bin/activate 2>/dev/null || source .venv/Scripts/activate
+VENV_PY=.venv/bin/python
+if [ ! -x "$VENV_PY" ]; then
+	rm -rf .venv
+	"$PY" -m venv .venv
+fi
 
 echo "3/4 Installation des dépendances"
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-pip freeze > requirements.lock
+"$VENV_PY" -m pip install pandas scikit-learn pytest
 
 echo "4/4 Diagnostic"
-python scripts/check_setup.py
+"$VENV_PY" scripts/check_setup.py
