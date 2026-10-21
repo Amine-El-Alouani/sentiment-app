@@ -1,0 +1,13 @@
+Rattrapage du TP1 au TP5 : ressources pour le binôme
+
+1. guide-rattrapage-tp1-tp5.pdf : la démarche complète, commande par commande.
+2. Kit du TP1 : à télécharger sur le dépôt du cours,
+   https://github.com/larhlimi2023/sentiment-app (bouton « Code », puis « Download ZIP »).
+3. tp2-semaine2-kit.zip : kit du TP2.
+4. kit-tp3.zip : kit du TP3.
+5. tp4-tests-qualite-kit.zip : kit du TP4.
+6. tp5-interface-kit.zip : kit du TP5.
+7. journal-tp1-tp5.md : le journal de bord à compléter après chaque contrôle,
+   à placer dans docs/ de votre dépôt, avec vos captures dans docs/captures/.
+
+Décompressez chaque kit avec Expand-Archive dans C:\IA-DEV, à côté du dépôt (voir la section 2 du guide).

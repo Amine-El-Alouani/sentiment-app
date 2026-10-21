@@ -1,0 +1,24 @@
+# Configuration des outils de qualité (TP4). Le packaging (TP6) complétera ce fichier.
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["notebooks"]
+
+[tool.ruff.lint]
+# E4, E7, E9, F : erreurs probables ; I : ordre des imports ; B : constructions à risque
+select = ["E4", "E7", "E9", "F", "I", "B"]
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "src"            # pour que mypy trouve predict.py, importé par api/model.py
+check_untyped_defs = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["joblib", "joblib.*", "sklearn", "sklearn.*", "pandas", "pandas.*", "uvicorn", "uvicorn.*"]
+ignore_missing_imports = true
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true

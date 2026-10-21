@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from fastapi import FastAPI
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from src.predict import predict
 
@@ -17,7 +17,7 @@ app = FastAPI(
 
 
 class PredictionRequest(BaseModel):
-    text: str
+    text: str = Field(min_length=1, max_length=2000)
 
     @field_validator("text")
     @classmethod

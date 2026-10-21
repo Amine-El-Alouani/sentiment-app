@@ -1,0 +1,11 @@
+      # TP4 (étape E) : dans .github/workflows/ci.yml, remplacez l'étape « Tests » par ces quatre étapes.
+      # Elles restent après l'étape « Modèle de démonstration » ajoutée au TP3, et chacune active
+      # l'environnement virtuel, comme les étapes du TP1.
+      - name: Outils de qualité (TP4)
+        run: . .venv/bin/activate && pip install -r requirements-dev.txt
+      - name: ruff
+        run: . .venv/bin/activate && ruff check .
+      - name: mypy
+        run: . .venv/bin/activate && mypy api
+      - name: Tests et couverture
+        run: . .venv/bin/activate && pytest -q --cov=api --cov-report=term-missing --cov-fail-under=95

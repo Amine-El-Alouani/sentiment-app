@@ -1,0 +1,17 @@
+# Vérifications lancées à chaque « git commit » (TP4, étape E).
+# Installation, une fois par clone : pre-commit install
+# Les outils sont ceux de l'environnement virtuel : activez-le avant de commiter.
+repos:
+  - repo: local
+    hooks:
+      - id: ruff
+        name: ruff (erreurs probables, imports)
+        entry: ruff check --force-exclude
+        language: system
+        types: [python]
+      - id: mypy
+        name: mypy (contrat typé de l'API)
+        entry: mypy api
+        language: system
+        types: [python]
+        pass_filenames: false

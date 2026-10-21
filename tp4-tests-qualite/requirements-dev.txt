@@ -1,0 +1,7 @@
+# Outils de la semaine 4 (TP4 : tests approfondis et qualité)
+# Versions publiées depuis au moins deux semaines, épinglées pour que tout le monde voie les mêmes remarques.
+pytest-cov==7.1.0
+hypothesis==6.168.3
+ruff==0.16.9
+mypy==2.3.1
+pre-commit==4.6.2

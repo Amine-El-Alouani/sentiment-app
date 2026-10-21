@@ -1,0 +1,1715 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{lmodern,textcomp,upquote,microtype}
+\usepackage[margin=2.2cm,headheight=14pt]{geometry}
+\usepackage{xcolor,graphicx,booktabs,array,tabularx,longtable,enumitem}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{needspace,etoolbox}
+% Un bloc de code ne commence jamais en toute fin de page : sinon son cadre se coupe
+\BeforeBeginEnvironment{lstlisting}{\par\needspace{5\baselineskip}}
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit,arrows.meta,shapes.geometric,backgrounds,babel}
+\usepackage{hyperref}
+
+\definecolor{bleu}{RGB}{31,78,121}
+\definecolor{vert}{RGB}{30,110,60}
+\definecolor{orangef}{RGB}{185,95,15}
+\definecolor{gris}{RGB}{246,246,246}
+% Couleurs nommées : babel-french rend « ! » actif dans le document, d'où aucun mélange xcolor en ligne
+\colorlet{regle}{black!18}\colorlet{fleche}{black!45}
+\colorlet{fondvert}{vert!5}\colorlet{cadrevert}{vert!75!black}
+\colorlet{fondorange}{orangef!6}\colorlet{fondbleu}{bleu!5}
+\colorlet{trait}{black!70}\colorlet{traitclair}{black!50}
+\colorlet{cadregroupe}{black!25}\colorlet{fondgroupe}{black!3}
+\hypersetup{colorlinks=true,linkcolor=bleu,urlcolor=bleu,
+  pdftitle={Rattrapage du TP1 au TP5},pdfauthor={A. Larhlimi}}
+
+\lstset{basicstyle=\ttfamily\small,backgroundcolor=\color{gris},frame=single,rulecolor=\color{regle},
+  columns=fullflexible,keepspaces=true,upquote=true,breaklines=true,showstringspaces=false,
+  postbreak=\mbox{\textcolor{fleche}{$\hookrightarrow$}\space},
+  xleftmargin=3pt,xrightmargin=3pt,aboveskip=7pt,belowskip=7pt,extendedchars=true,
+  literate={é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1 {à}{{\`a}}1 {â}{{\^a}}1
+           {ç}{{\c c}}1 {ô}{{\^o}}1 {î}{{\^i}}1 {ï}{{\"i}}1 {ù}{{\`u}}1 {û}{{\^u}}1
+           {É}{{\'E}}1 {È}{{\`E}}1 {À}{{\`A}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
+           {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1 {…}{{\ldots}}1 {’}{{'}}1}
+
+\newtcolorbox{attendu}[1][Résultat attendu]{breakable,colback=fondvert,colframe=cadrevert,
+  fonttitle=\bfseries\small,title={#1},boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=3pt,bottom=3pt}
+\newtcolorbox{attention}[1][Attention]{breakable,colback=fondorange,colframe=orangef,
+  fonttitle=\bfseries\small,title={#1},boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=3pt,bottom=3pt}
+\newtcolorbox{enseignant}[1][Côté enseignant]{breakable,colback=fondbleu,colframe=bleu,
+  fonttitle=\bfseries\small,title={#1},boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=3pt,bottom=3pt}
+
+% code en ligne : coupure autorisée après un tiret explicite
+\newcommand{\co}[1]{{\ttfamily\hyphenchar\font=45\relax #1}}
+\newcommand{\bs}{\textbackslash\allowbreak{}}
+\setlist{itemsep=2pt,topsep=4pt}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\parskip}{4pt}
+\setlength{\emergencystretch}{3em}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small Rattrapage du TP1 au TP5}\rhead{\small Développement et déploiement d'applications intelligentes}
+\cfoot{\thepage}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{2.5cm}
+{\large Développement et déploiement d'applications intelligentes\par}
+\vspace{1.8cm}
+{\Huge\bfseries Rattrapage du TP1 au TP5\par}
+\vspace{0.6cm}
+{\Large Démarche complète, commande par commande,\\ avec les résultats attendus\par}
+\vspace{1.6cm}
+\begin{tabular}{@{}ll@{}}
+\toprule
+TP1 & Cadrer l'application et préparer l'environnement \\
+TP2 & Entraîner, évaluer et sauvegarder le modèle \\
+TP3 & Exposer le modèle par une API \\
+TP4 & Tests approfondis et qualité \\
+TP5 & L'interface Streamlit \\
+\bottomrule
+\end{tabular}
+\vfill
+{\large A. Larhlimi\par}
+\vspace{0.3cm}
+{\large Octobre 2026\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% =====================================================================
+\section{Vue d'ensemble}
+% =====================================================================
+
+Ce document conduit un binôme du poste vide jusqu'au dépôt \co{sentiment-app} de fin de TP5 :
+l'environnement et le cadrage (TP1), un modèle de sentiment (TP2), une API qui l'expose (TP3), les tests et
+outils qui la protègent (TP4), puis l'interface qui l'appelle (TP5). Chaque étape donne la commande à lancer, puis le résultat exact à
+obtenir avant de continuer. Les deux dernières parties s'adressent à l'enseignant : comment il vérifie, et
+comment il note.
+
+\subsection{Le fil des cinq TP}
+
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}l c X l l@{}}
+\toprule
+\textbf{TP} & \textbf{Sem.} & \textbf{Ce que le dépôt gagne} & \textbf{Contrôles} & \textbf{Tests à la fin} \\
+\midrule
+TP1 & 1 & Environnement Python 3.11, structure du dépôt, trois fiches de cadrage, dépôt GitHub à deux auteurs & T0 à T7 & 38 passed \\
+TP2 & 2 & Jeu de démonstration, entraînement, évaluation, fonction \co{predict()} & C1 à C5 & 42 passed \\
+TP3 & 3 & API FastAPI (\co{/health}, \co{/predict}), contrat Pydantic, CI qui entraîne le modèle & T14 à T20 & 48 passed \\
+TP4 & 4 & Tests aux limites, abstention, tests d'intégration, ruff, mypy, pre-commit, CI étendue & T21 à T27 & aucun \co{failed} \\
+TP5 & 5 & Interface Streamlit : un avis ou un fichier d'avis, verdicts, abstention, erreurs traduites & T28 à T34 & aucun \co{failed} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Avec le corrigé du TP4, on obtient 83 passed et 2 xfailed, puis 95 passed et 2 xfailed après le TP5 ; les
+nombres d'un binôme peuvent être plus grands, jamais avec un \co{failed}.
+
+\subsection{L'architecture du dépôt}
+
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\small,
+  boite/.style={draw=bleu, rounded corners=2pt, fill=white, align=center, inner sep=4pt, minimum height=9mm},
+  donnee/.style={cylinder, shape border rotate=90, aspect=0.16, draw=bleu, fill=fondbleu, align=center,
+                 inner sep=3pt, minimum height=11mm},
+  appel/.style={-{Stealth[length=2mm]}, thick, color=trait},
+  verif/.style={-{Stealth[length=2mm]}, dashed, thick, color=traitclair},
+  groupe/.style={draw=cadregroupe, fill=fondgroupe, rounded corners=4pt, inner sep=7pt},
+  titre/.style={font=\footnotesize\bfseries, color=bleu, anchor=south west, inner sep=2pt},
+  etiq/.style={font=\scriptsize, color=trait, fill=white, inner sep=1pt}
+]
+% Ligne 1 : le modèle (TP2)
+\node[boite] (demo) {\texttt{make\_demo.py}};
+\node[donnee, right=13mm of demo] (csv) {\texttt{data/}\\\texttt{demo\_reviews.csv}};
+\node[boite, right=13mm of csv] (train) {\texttt{train.py}};
+\node[donnee, right=15mm of train] (joblib) {\texttt{models/sentiment.joblib}\\\scriptsize jamais versionné};
+\node[boite, right=17mm of joblib] (predict) {\texttt{predict.py}\\\texttt{predict()}};
+\node[donnee, below=7mm of train] (metrics) {\texttt{models/metrics.json}\\\scriptsize versionné};
+\draw[appel] (demo) -- node[etiq, above=1pt]{écrit} (csv);
+\draw[appel] (csv) -- node[etiq, above=1pt]{lu par} (train);
+\draw[appel] (train) -- node[etiq, above=1pt]{produit} (joblib);
+\draw[appel] (joblib) -- node[etiq, above=1pt]{chargé par} (predict);
+\draw[appel] (train) -- node[etiq, right=1pt]{écrit} (metrics);
+% Ligne 2 : le service (TP3) et ses clients
+\path (predict |- metrics.south) ++(0,-17mm) node[boite] (raccord) {\texttt{api/model.py}\\\scriptsize seuil, étiquettes};
+\node[boite, left=16mm of raccord] (main) {\texttt{api/main.py}, \texttt{schemas.py}\\\scriptsize \texttt{/health}, \texttt{/predict}, contrat};
+\node[boite, left=24mm of main, draw=vert, text=vert] (client) {Clients HTTP\\\scriptsize interface (TP5), agents (TP10)};
+\draw[appel] (client) -- node[etiq, above=1pt]{POST /predict} (main);
+\draw[appel] (main) -- node[etiq, above=1pt]{appelle} (raccord);
+\draw[appel] (raccord) -- node[etiq, right=1pt]{appelle} (predict);
+% Ligne 3 : les garde-fous (TP1 à TP4)
+\node[boite, below=17mm of client] (ci) {CI : \texttt{ci.yml}\\\scriptsize entraîne, ruff, mypy, pytest};
+\node[boite, right=14mm of ci] (tests) {\texttt{tests/}\\\scriptsize pytest, couverture};
+\node[boite, right=10mm of tests] (hook) {pre-commit\\\scriptsize ruff, mypy à chaque commit};
+\draw[appel] (ci) -- node[etiq, above=1pt]{lance} (tests);
+% Les cadres
+\begin{scope}[on background layer]
+  \node[groupe, fit=(demo)(csv)(train)(joblib)(predict)(metrics)] (g2) {};
+  \node[groupe, fit=(main)(raccord)] (g3) {};
+  \node[groupe, fit=(ci)(tests)(hook)] (gf) {};
+\end{scope}
+\node[titre] at (g2.north west) {Le modèle : \texttt{src/} (TP2)};
+\node[titre] at (g3.north west) {Le service : \texttt{api/} (TP3)};
+\node[titre] at (gf.north west) {Les garde-fous (TP1 à TP4)};
+\draw[verif] (gf.east) -| node[etiq, pos=0.75, right=1pt]{vérifient} (g3.south east);
+\draw[verif] (gf.west) -- ++(-6mm,0) |- node[etiq, pos=0.25, left=1pt]{vérifient} (g2.west);
+\end{tikzpicture}%
+}
+\end{center}
+
+Le dépôt suit un seul chemin : des avis, un modèle entraîné, une fonction de prédiction, une API qui
+l'expose. Trois règles en découlent, et la notation les vérifie :
+
+\begin{enumerate}
+\item L'API n'entraîne rien : elle appelle \co{predict()} du TP2, qui charge \co{models/sentiment.joblib}
+une seule fois.
+\item Le modèle n'est jamais versionné : il se réentraîne en une commande. Seule sa mesure,
+\co{models/metrics.json}, entre dans Git.
+\item Les clients (l'interface du TP5, les agents du TP10) passent par l'API, jamais par le fichier
+\co{.joblib}.
+\end{enumerate}
+
+\subsection{Comment lire ce document}
+
+\begin{itemize}
+\item Les commandes sont écrites pour PowerShell, sous Windows. Sauf mention contraire, elles se lancent dans
+le dossier du dépôt, \co{C:\bs IA-DEV\bs sentiment-app}, avec l'environnement virtuel activé. Les équivalents
+pour cmd et bash sont en annexe~\ref{ann:shells}.
+\item \textbf{Une commande par ligne.} Quand un tableau donne deux commandes dans la même case, lancez-les
+l'une après l'autre : les mots qui les relient ne font pas partie des commandes.
+\item Les encadrés verts donnent le résultat attendu, les orange les pièges, les bleus le point de vue de
+l'enseignant.
+\item Ne passez à l'étape suivante que lorsque le contrôle est vert. Un échec annoncé comme normal l'est
+vraiment : il désigne le travail qui reste à faire.
+\end{itemize}
+
+% =====================================================================
+\section{Les ressources à télécharger}
+% =====================================================================
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.4cm} c l X@{}}
+\toprule
+\textbf{Ressource} & \textbf{TP} & \textbf{Pour qui} & \textbf{Contenu} \\
+\midrule
+Kit du TP1 : dépôt du cours, bouton \og Code \fg{} puis \og Download ZIP \fg{} (\co{sentiment-app-main.zip}) & 1 & binôme &
+Structure du dépôt, 38 tests (23 d'environnement, 12 de cadrage, 3 d'historique Git), fiches à remplir,
+scripts \co{setup} et \co{check\_setup}, CI \\
+\co{tp2-semaine2-kit.zip} & 2 & binôme & \co{src/} (\co{make\_demo}, \co{train}, \co{evaluate},
+\co{predict}), \co{tests/test\_model.py}, notebook Colab, énoncé, marche à suivre \\
+\co{kit-tp3.zip} & 3 & binôme & \co{api/}, \co{tests/test\_api.py}, \co{docs/semaine3.md}, énoncé, marche à
+suivre ; le script d'installation adapte \co{pytest.ini} et la CI \\
+\co{tp4-tests-qualite-kit.zip} & 4 & binôme & Outils (\co{requirements-dev.txt}, \co{pyproject.toml},
+pre-commit), courbe du seuil, bilan du jeu d'or, tests à compléter, \co{ci-tp4.yml}, énoncé, marche \\
+\co{tp5-interface-kit.zip} & 5 & binôme & \co{ui/client.py}, \co{ui/app.py}, tests du client et de la page,
+fichier d'avis d'exemple, énoncé, marche \\
+\co{journal-tp1-tp5.md} & 1 à 5 & binôme & Le journal de bord à compléter, avec ses captures d'écran \\
+\co{tp4-paquet.zip} & 4 & enseignant & Le kit, le corrigé complet, les valeurs mesurées, le calendrier de
+diffusion. \textbf{Ne pas distribuer.} \\
+\co{releve\_binomes.py}, \co{binomes.csv} & tous & enseignant & La relève automatique des dépôts de la
+classe \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Le dépôt du cours est \url{https://github.com/larhlimi2023/sentiment-app}. Les archives des TP2 à TP4 sont
+fournies par l'enseignant.
+
+\subsection{Décompresser sans piège}
+
+L'Explorateur de Windows ajoute un dossier en décompressant : \co{kit-tp3.zip} devient
+\co{kit-tp3\bs kit-tp3}, et les chemins relatifs des scripts ne mènent plus au dépôt. Décompressez donc avec
+PowerShell, directement dans le dossier de travail, et donnez toujours aux scripts d'installation le chemin
+complet du dépôt.
+
+\begin{lstlisting}
+New-Item -ItemType Directory -Force C:\IA-DEV
+Expand-Archive "$HOME\Downloads\tp2-semaine2-kit.zip" -DestinationPath C:\IA-DEV -Force
+Get-ChildItem C:\IA-DEV
+\end{lstlisting}
+
+\begin{attendu}
+Un dossier par kit, directement dans \co{C:\bs IA-DEV} : \co{tp2-semaine2}, \co{kit-tp3},
+\co{tp4-tests-qualite}, \co{tp5-interface}, à côté de \co{sentiment-app}. Jamais à l'intérieur du dépôt.
+\end{attendu}
+
+\begin{attention}[Archive introuvable]
+Si \co{Expand-Archive} répond que le chemin n'existe pas, l'archive n'est pas dans Téléchargements, ou le
+navigateur l'a renommée (\co{(1)} ajouté au nom). Cherchez-la, puis copiez le chemin le plus récent entre
+guillemets :
+\begin{lstlisting}
+Get-ChildItem $HOME -Recurse -Filter "tp4-tests-qualite-kit*.zip" -ErrorAction SilentlyContinue | Select-Object FullName, LastWriteTime
+\end{lstlisting}
+\end{attention}
+
+% =====================================================================
+\section{Préparer le poste}
+% =====================================================================
+
+\subsection{Python 3.11, Git et VS Code}
+
+\begin{lstlisting}
+py -0
+py -3.11 --version
+git --version
+\end{lstlisting}
+
+\begin{attendu}
+\co{py -0} liste une version 3.11, et \co{py -3.11 -{}-version} affiche \co{Python 3.11.x}. Sinon :
+\co{winget install Python.Python.3.11}, ou l'installateur 3.11.9 de python.org.
+\end{attendu}
+
+\begin{attention}[Pourquoi 3.11 et pas une version plus récente]
+Les tests du TP1 vérifient la version de Python. Surtout, pandas 2.2 et scikit-learn 1.5, épinglés par le
+cours, n'ont pas de version précompilée pour les Python plus récents : pip essaie alors de les compiler et
+échoue (\co{Compiler cl cannot compile programs}, \co{metadata-generation-failed}). C'est toujours
+\co{py -3.11 -m venv .venv} qui crée l'environnement.
+\end{attention}
+
+\subsection{L'identité Git de chaque membre}
+
+Chaque membre, sur son propre poste :
+
+\begin{lstlisting}
+git config --global user.name "Prénom Nom"
+git config --global user.email "prenom.nom@ecole.ma"
+\end{lstlisting}
+
+C'est ce nom que \co{git shortlog} compte, et le test d'historique du TP1 exige deux auteurs distincts. Si
+une seule personne joue les deux rôles sur un même poste, l'identité se règle pour un seul dépôt, sans
+\co{--global}.
+
+\subsection{PowerShell et cmd}
+
+Une invite qui commence par \co{PS C:\bs...} est PowerShell ; \co{C:\bs...>} sans \co{PS} est l'invite de
+commandes (cmd). Ce guide est écrit pour PowerShell, et plusieurs commandes n'existent pas dans cmd
+(\co{Rename-Item}, \co{Get-Content}, \co{\$env:TEMP}). Dans VS Code, choisissez PowerShell comme terminal.
+
+Une fois par poste, autorisez l'activation des environnements virtuels :
+
+\begin{lstlisting}
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+\end{lstlisting}
+
+\subsection{Les comptes GitHub}
+
+Chaque membre a son compte. L'enseignant utilise le compte \co{Larhlimiabd-ai} (affiché
+\og Larhlimi-AI-2026 \fg{}). Quand un poste a servi à plusieurs comptes, Windows peut envoyer les mauvais
+identifiants ; mettez alors le compte dans l'adresse du dépôt
+(\co{https://<compte>@github.com/...}), ou effacez les identifiants mémorisés avec
+\co{cmdkey /delete:git:https://github.com}.
+
+% =====================================================================
+\section{Qui fait quoi dans le binôme}
+% =====================================================================
+
+Les deux membres travaillent dans le même dépôt, créé par le membre A. Le membre B y est collaborateur : il
+n'a ni fork ni dépôt à lui. L'enseignant lit l'historique, et chaque membre doit avoir commité dans chaque TP.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}l X X X@{}}
+\toprule
+\textbf{TP} & \textbf{Membre A} & \textbf{Membre B} & \textbf{À deux} \\
+\midrule
+TP1 & Récupère le kit, crée l'environnement, crée le dépôt GitHub privé, invite B et l'enseignant, premier
+push avec \co{requirements.lock} & Accepte l'invitation, clone, crée son environnement, commite sa ligne du
+\co{README.md} & Les trois fiches de cadrage ; la vérification finale ; le clone frais \\
+TP2 & Installe le kit, génère les données, entraîne, évalue, pousse & Récupère le travail, réentraîne sur son
+poste, contrôle C5 & La lecture des erreurs et \co{docs/semaine2.md} \\
+TP3 & Installe le kit, réentraîne, lance les tests, pousse & Récupère, réentraîne, fait les essais de
+l'API (T15 à T20) & Les deux questions de \co{docs/semaine3.md} \\
+TP4 & Étapes B et C : contrat d'entrée, courbe du seuil, abstention & Étapes D et E : intégration, contrat
+typé, ruff, pre-commit, CI & Le jeu d'or (dix avis chacun) et \co{docs/semaine4.md} \\
+TP5 & Installe le kit, lance l'API et la page, essais T29 à T31 & Récupère, provoque les erreurs (T32),
+analyse le fichier d'avis (T33) & \co{docs/semaine5.md} et la vérification de la CI \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Trois habitudes évitent presque tous les conflits : \co{git pull} avant de commencer, un commit par tâche
+avec un message explicite, \co{git push} à la fin. Au TP4, répartissez le travail par fichiers, pour ne
+jamais modifier le même fichier en même temps. Le modèle n'étant pas versionné, chaque membre le
+réentraîne sur son poste après un \co{git pull}.
+
+% =====================================================================
+\section{TP1 : cadrer l'application et préparer l'environnement}
+% =====================================================================
+
+Le TP1 produit un dépôt GitHub privé, à deux auteurs, qui contient l'environnement, la structure du projet et
+trois fiches de cadrage. Huit étapes, huit contrôles (T0 à T7), environ deux heures.
+
+\subsection{Étape 1 : récupérer le kit (membre A, T0)}
+
+Sur le dépôt du cours, \og Code \fg{} puis \og Download ZIP \fg{}. Ne clonez pas ce dépôt : un clone
+emporterait l'historique de l'enseignant, et le test d'historique compterait ses commits.
+
+\begin{lstlisting}
+New-Item -ItemType Directory -Force C:\IA-DEV
+Expand-Archive "$HOME\Downloads\sentiment-app-main.zip" -DestinationPath C:\IA-DEV -Force
+Rename-Item C:\IA-DEV\sentiment-app-main sentiment-app
+cd C:\IA-DEV\sentiment-app
+Get-ChildItem -Force
+\end{lstlisting}
+
+\begin{attendu}[T0 : la structure est là]
+Les sept dossiers \co{app}, \co{data}, \co{docs}, \co{models}, \co{scripts}, \co{tests}, \co{ui}, ainsi que
+\co{.github} et \co{.gitignore}.
+\end{attendu}
+
+\subsection{Étape 2 : l'environnement (membre A, T1)}
+
+\begin{lstlisting}
+py -3.11 -m venv .venv
+.venv\Scripts\Activate.ps1
+python --version
+Select-String -Path requirements.txt -Pattern "^pyarrow"
+\end{lstlisting}
+
+L'invite commence désormais par \co{(.venv)}. Si la dernière commande affiche une ligne
+\co{pyarrow==21.0.*}, retirez-la : elle contredit \co{mlflow==2.17.*}, qui exige une version plus ancienne,
+et pip refuserait toute l'installation (\co{ResolutionImpossible}). Streamlit et MLflow déclarent déjà
+pyarrow, pip choisira une version qui convient aux deux.
+
+\begin{lstlisting}
+(Get-Content requirements.txt) | Where-Object { $_ -notmatch '^pyarrow' } | Set-Content requirements.txt
+\end{lstlisting}
+
+Puis l'installation, le gel des versions et le premier diagnostic :
+
+\begin{lstlisting}
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+python -m pip freeze | Out-File -Encoding utf8 requirements.lock
+python scripts/check_setup.py
+python -m pytest -q
+\end{lstlisting}
+
+\begin{attendu}[T1 : le point de départ]
+\co{Python 3.11.x}. L'installation dure 5 à 10 minutes : \co{requirements.txt} contient tout le semestre,
+PyTorch compris. Le diagnostic signale encore une erreur et des avertissements (pas de dépôt Git, fiches
+vides). pytest affiche \textbf{3 failed, 31 passed, 4 skipped} : les trois échecs réclament les fiches, les
+quatre tests ignorés attendent le dépôt Git.
+\end{attendu}
+
+Le script \co{scripts\bs setup.ps1} enchaîne ces étapes en une commande :
+\co{powershell -ExecutionPolicy Bypass -File scripts\bs setup.ps1}.
+
+\subsection{Étape 3 : les fiches de cadrage (à deux, 50 min, T2)}
+
+Dans \co{docs/cadrage/}, trois fiches : \co{cas1-pharmacie.md}, \co{cas2-reglement.md},
+\co{cas3-avis-negatifs.md}. \co{EXEMPLE-corrige.md} montre le niveau attendu ; ne le recopiez pas. Les tests
+vérifient trois règles :
+
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}X l@{}}
+\toprule
+\textbf{Règle} & \textbf{Test} \\
+\midrule
+Chaque rubrique, sauf \og Approche retenue \fg{}, contient au moins 20 caractères rédigés. Les lignes de
+consigne (qui commencent par \co{>}) et les cases à cocher ne comptent pas. & \co{test\_sections\_are\_filled} \\
+Une seule case cochée par fiche, écrite \co{- [x]} avec un x minuscule. & \co{test\_exactly\_one\_approach\_checked} \\
+Le texte sous \og Justification \fg{} cite au moins deux critères par leur lettre : (a) données
+étiquetées, (b) vérifiabilité, (c) coût par requête, (d) conséquence d'une erreur. &
+\co{test\_justification\_cites\_two\_criteria} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{lstlisting}
+python -m pytest tests/test_cadrage.py -q
+python -m pytest -q
+\end{lstlisting}
+
+\begin{attendu}[T2 : les fiches sont complètes]
+\textbf{12 passed} pour \co{test\_cadrage.py}, puis \textbf{34 passed, 4 skipped} pour la suite complète.
+Les deux derniers tests s'arrêtent à la première fiche fautive : une fois \co{cas1} corrigée, ils signalent
+\co{cas2}.
+\end{attendu}
+
+\subsection{Étape 4 : le dépôt GitHub (membre A, T3)}
+
+Sur GitHub, créez un dépôt \textbf{privé} \co{sentiment-app}, vide : sans README, ni \co{.gitignore}, ni
+licence. Dans Settings, Collaborators, Add people, invitez le membre B, puis l'enseignant
+(\co{Larhlimiabd-ai}). Ensuite, dans le dossier du dépôt :
+
+\begin{lstlisting}
+git init
+git add -A
+git status
+git commit -m "TP1 : environnement, structure et cadrage"
+git branch -M main
+git remote add origin https://github.com/<compte-A>/sentiment-app.git
+git push -u origin main
+python -m pytest -q
+\end{lstlisting}
+
+\begin{attendu}[T3 : rien de lourd ni de secret dans Git]
+Avant le commit, \co{git status} ne liste ni \co{.venv/}, ni \co{.env}, ni fichier \co{.joblib}. Après le
+push, les fichiers apparaissent sur GitHub. Le premier passage de la CI est rouge (un seul auteur) : c'est
+attendu. pytest affiche \textbf{37 passed, 1 failed} : il manque le commit du membre B.
+\end{attendu}
+
+\begin{attention}[L'adresse du dépôt]
+Remplacez \co{<compte-A>} par le vrai nom du compte, sans chevrons : laissés tels quels, ils provoquent une
+erreur 400. Le dépôt peut porter un autre nom que \co{sentiment-app} ; le membre B le clonera alors dans un
+dossier nommé \co{sentiment-app}. Au premier envoi, Git ouvre une fenêtre de connexion : soyez connecté à
+GitHub avec le compte du membre A.
+\end{attention}
+
+\subsection{Étape 5 : rejoindre le dépôt (membre B, T4)}
+
+Acceptez l'invitation, depuis le courriel de GitHub ou à l'adresse
+\url{https://github.com/<compte-A>/sentiment-app/invitations}. Puis, sur votre poste :
+
+\begin{lstlisting}
+cd C:\IA-DEV
+git clone https://github.com/<compte-A>/sentiment-app.git sentiment-app
+cd sentiment-app
+py -3.11 -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python scripts/check_setup.py
+\end{lstlisting}
+
+\begin{attendu}[T4 : l'environnement du membre B]
+\co{0 erreur(s)} au diagnostic. Des avertissements restent possibles tant que le binôme n'a pas fini.
+\end{attendu}
+
+Complétez ensuite votre ligne du tableau du binôme, puis commitez ce seul fichier
+(\co{requirements.lock} diffère d'un poste à l'autre, seul le membre A le commite) :
+
+\begin{lstlisting}
+notepad README.md
+git add README.md
+git commit -m "README : ajout de <nom> au tableau du binome"
+git push
+\end{lstlisting}
+
+\subsection{Étape 6 : un commit par membre (membre A, T5)}
+
+\begin{lstlisting}
+git pull
+notepad README.md
+git add README.md
+git commit -m "README : ajout de <nom> au tableau du binome"
+git push
+git shortlog -sn --all
+python -m pytest tests/test_git_history.py -q
+\end{lstlisting}
+
+\begin{attendu}[T5 : deux auteurs]
+Deux noms distincts dans \co{git shortlog}, puis \textbf{3 passed}.
+\end{attendu}
+
+\begin{attention}[Push refusé]
+\co{rejected (non-fast-forward)} : l'autre membre a poussé entre-temps. \co{git pull}, puis, en cas de
+conflit sur \co{README.md}, gardez les deux lignes, supprimez les marqueurs \co{<{}<{}<{}<{}<{}<{}<}, \co{=======} et
+\co{>{}>{}>{}>{}>{}>{}>}, puis \co{git add README.md}, \co{git commit} et \co{git push}.
+\end{attention}
+
+\subsection{Étape 7 : la vérification finale (à deux, T6)}
+
+\begin{lstlisting}
+git pull
+python scripts/check_setup.py
+python -m pytest -q
+\end{lstlisting}
+
+\begin{attendu}[T6 : tout est vert]
+\co{0 erreur(s), 0 avertissement(s)}, puis \textbf{38 passed}. Sur GitHub, l'onglet Actions est vert.
+\end{attendu}
+
+\subsection{Étape 8 : le test de l'enseignant, sur un clone frais (T7)}
+
+\begin{lstlisting}
+cd $env:TEMP
+git clone https://github.com/<compte-A>/sentiment-app.git verif
+cd verif
+py -3.11 -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python scripts/check_setup.py
+python -m pytest -q
+\end{lstlisting}
+
+\begin{attendu}[T7 : le dépôt fonctionne ailleurs que sur vos postes]
+\co{0 erreur(s)} et \textbf{38 passed}, sans aucune intervention. S'il manque quelque chose, un fichier n'a
+jamais été poussé.
+\end{attendu}
+
+% =====================================================================
+\section{TP2 : entraîner, évaluer et sauvegarder le modèle}
+% =====================================================================
+
+Le TP2 ajoute un modèle de sentiment reproductible et évalué. Seule sa mesure, \co{models/metrics.json},
+entre dans Git ; le modèle lui-même, \co{models/sentiment.joblib}, se réentraîne en une commande. Cinq
+contrôles (C1 à C5).
+
+\subsection{Installer le kit (C1)}
+
+\begin{lstlisting}
+cd C:\IA-DEV\sentiment-app
+Expand-Archive "$HOME\Downloads\tp2-semaine2-kit.zip" -DestinationPath C:\IA-DEV -Force
+python C:\IA-DEV\tp2-semaine2\appliquer_tp2.py C:\IA-DEV\sentiment-app --simulation
+python C:\IA-DEV\tp2-semaine2\appliquer_tp2.py C:\IA-DEV\sentiment-app
+python -m pytest -q
+\end{lstlisting}
+
+\begin{attendu}[C1 : le point de départ du TP2]
+La simulation liste les quatre scripts de \co{src/}, \co{tests/test\_model.py}, le notebook, les deux
+documents du TP, puis l'ajout de \co{!models/metrics.json} au \co{.gitignore}. pytest affiche
+\textbf{2 failed, 38 passed, 2 skipped} : les deux échecs réclament \co{models/metrics.json}, les deux tests
+ignorés attendent le modèle.
+\end{attendu}
+
+\subsection{Générer, entraîner, évaluer (C2 à C4)}
+
+\begin{lstlisting}
+python src/make_demo.py
+python src/train.py
+git status --short
+python src/evaluate.py
+\end{lstlisting}
+
+\begin{attendu}[C2 à C4]
+\begin{itemize}
+\item C2 : \co{290 avis écrits}, 145 positifs et 145 négatifs, dont 100 avis mitigés et 30 neutres.
+\item C3 : \co{Vocabulaire : 316 termes}, puis \co{F1 macro sur le jeu de test : 0.879 (seuil 0.85)}. Dans
+\co{git status}, \co{models/metrics.json} apparaît ; ni \co{models/sentiment.joblib}, ni
+\co{data/demo\_reviews.csv}. Les autres lignes sont les fichiers du kit.
+\item C4 : la matrice affiche \co{27 2} sur la ligne \co{negative} et \co{5 24} sur la ligne
+\co{positive} : 7 erreurs sur 58 avis, toutes sur des avis mitigés.
+\end{itemize}
+\end{attendu}
+
+Lisez les trois erreurs affichées : un sac de mots compte les mots positifs et négatifs, mais ne voit pas le
+retournement d'un avis mitigé. Écrivez \co{docs/semaine2.md} en trois phrases : quelles erreurs, pourquoi, et
+ce qu'il faudrait pour les corriger.
+
+\subsection{Le vrai jeu de données, les tests, le push (C5)}
+
+\begin{lstlisting}
+python src/train.py --allocine
+python -m pytest -q
+notepad docs\semaine2.md
+git add -A
+git commit -m "Semaine 2 : modele de sentiment, metriques et tests"
+git push
+\end{lstlisting}
+
+\begin{attendu}[C5 : tout est vert]
+\co{Source : allocine, 20000 avis}, puis \co{F1 macro sur le jeu de test : 0.920}, et \textbf{42 passed}.
+L'onglet Actions passe au vert : la CI n'a jamais le modèle, ses deux tests de prédiction y sont ignorés, et
+les deux tests de métriques lisent \co{metrics.json}.
+\end{attendu}
+
+\textbf{Membre B} : \co{git pull}, \co{python src/make\_demo.py}, \co{python src/train.py}, puis
+\co{python -m pytest -q} donne 42 passed. Sans modèle sur son poste, deux tests restent ignorés.
+
+\begin{attention}[Allociné injoignable]
+Si le téléchargement échoue (proxy, coupure), gardez le modèle du jeu de démonstration et signalez-le dans
+\co{docs/semaine2.md}.
+\end{attention}
+
+% =====================================================================
+\section{TP3 : exposer le modèle par une API}
+% =====================================================================
+
+Le TP3 place le modèle derrière une API FastAPI qui appelle \co{predict()} du TP2 : \co{/health} dit si le
+service est prêt, \co{/predict} classe un avis. Sept contrôles (T14 à T20).
+
+\subsection{Installer le kit (T14)}
+
+\begin{lstlisting}
+cd C:\IA-DEV\sentiment-app
+Expand-Archive "$HOME\Downloads\kit-tp3.zip" -DestinationPath C:\IA-DEV -Force
+python C:\IA-DEV\kit-tp3\appliquer_tp3.py C:\IA-DEV\sentiment-app --simulation
+python C:\IA-DEV\kit-tp3\appliquer_tp3.py C:\IA-DEV\sentiment-app
+pip install -r requirements.txt
+python src/train.py
+python -m pytest -q
+\end{lstlisting}
+
+Le script copie \co{api/}, \co{tests/test\_api.py} et \co{docs/semaine3.md}, vérifie que
+\co{requirements.txt} contient FastAPI, uvicorn et httpx, ajoute \co{pythonpath = .} à \co{pytest.ini} pour
+que les tests trouvent \co{api/}, et complète \co{.github/workflows/ci.yml} : la CI installe l'API et
+entraîne le modèle avant les tests. \co{python src/train.py} remet le modèle du jeu de démonstration, celui
+que la CI entraîne : le TP2 s'est terminé sur Allociné.
+
+\begin{attendu}[T14 : 48 tests verts]
+La simulation liste les fichiers copiés, \co{déjà là} pour \co{requirements.txt}, puis les compléments de
+\co{pytest.ini} et de \co{ci.yml}. pytest affiche \textbf{48 passed} : les 42 du TP2, plus les six de l'API.
+Un avertissement \co{DeprecationWarning} venu de starlette est sans conséquence.
+\end{attendu}
+
+\begin{attention}[Où lancer \co{pip install}]
+Toujours dans le dossier du dépôt, jamais dans celui du kit : \co{requirements.txt} est dans le dépôt.
+\end{attention}
+
+\subsection{Faire répondre l'API (T15 à T18)}
+
+\begin{lstlisting}
+uvicorn api.main:app --reload
+\end{lstlisting}
+
+Le terminal affiche \co{Modèle chargé avec succès : tfidf-logreg (TP2, models/sentiment.joblib)} puis
+\co{Application startup complete}. Laissez-le ouvert et faites les essais de la section~\ref{sec:tests-api}
+dans \url{http://localhost:8000/docs}. Arrêtez ensuite l'API avec \co{Ctrl+C}.
+
+\subsection{Pousser et vérifier la CI (T19)}
+
+\begin{lstlisting}
+git add -A
+git commit -m "Semaine 3 : API FastAPI"
+git push
+\end{lstlisting}
+
+\begin{attendu}[T19 : la CI entraîne puis teste]
+Dans l'onglet Actions, l'étape \og Modèle de démonstration, pour les tests de l'API (TP3) \fg{} passe, puis
+l'étape \og Tests \fg{} affiche 48 passed. Les avertissements \co{CRLF will be replaced by LF} au
+\co{git add} sont sans conséquence.
+\end{attendu}
+
+\subsection{L'API sans modèle (T20), puis le compte rendu}
+
+\begin{lstlisting}
+Rename-Item models/sentiment.joblib sentiment.bak
+uvicorn api.main:app
+Rename-Item models/sentiment.bak sentiment.joblib
+notepad docs\semaine3.md
+git add -A
+git commit -m "Semaine 3 : compte rendu"
+git push
+\end{lstlisting}
+
+\begin{attendu}[T20 : l'API refuse de démarrer]
+\co{FileNotFoundError: models/sentiment.joblib absent : lancez python src/train.py}, puis
+\co{Application startup failed}. Lancez la troisième commande seulement après cet échec : elle remet le
+modèle en place.
+\end{attendu}
+
+Les deux questions de \co{docs/semaine3.md} : pourquoi l'API refuse-t-elle de démarrer sans modèle plutôt
+que de répondre 503 ; un texte vide est refusé deux fois, par Pydantic puis par \co{predict()}, est-ce
+redondant ? Répondez avec ce que vous avez observé.
+
+\textbf{Membre B} : \co{git pull}, \co{python src/make\_demo.py}, \co{python src/train.py},
+\co{python -m pytest -q} : 48 passed. Il fait aussi les essais de l'API sur son poste.
+
+% =====================================================================
+\section{Les tests de l'API}
+\label{sec:tests-api}
+% =====================================================================
+
+L'API se teste de trois façons : à la main dans le navigateur, en ligne de commande, et par les tests
+automatiques que pytest et la CI rejouent à chaque fois. Les deux premières demandent l'API lancée
+(\co{uvicorn api.main:app}) dans un autre terminal ; les tests automatiques n'en ont pas besoin.
+
+\subsection{Dans le navigateur : la page \co{/docs}}
+
+FastAPI génère cette page à partir du code. Pour chaque route : la déplier, cliquer sur
+\og Try it out \fg{}, saisir le corps de la requête, puis \og Execute \fg{}. La réponse s'affiche sous
+\og Code \fg{} et \og Response body \fg{}, et une ligne s'ajoute dans le terminal de l'API.
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Contrôle} & \textbf{Requête} & \textbf{Réponse au TP3} & \textbf{Réponse après le TP4} \\
+\midrule
+T15 & \co{GET /health} & 200, \co{"status": "OK"}, modèle \co{tfidf-logreg (TP2, ...)} & identique \\
+T16 & \co{POST /predict}, \co{\{"text": "Livraison rapide, produit conforme, très satisfait"\}} & 200, \co{POSITIVE}, 0,777 & identique \\
+T17 & \co{\{"text": "Produit cassé et service injoignable, à fuir"\}} & 200, \co{NEGATIVE}, 0,7465 & identique \\
+T18 & \co{\{"text": ""\}}, puis \co{\{\}}, puis \co{\{"text": 42\}} & 422 dans les trois cas & identique \\
+T22 & \co{\{"text": "\ \ \ "\}} (trois espaces) & 422, mais \co{detail} est une chaîne & 422, \co{detail} est une liste \\
+T24 & \co{\{"text": "xqzvb wlkptr grombu"\}} & 200, \co{NEGATIVE}, 0,5162 & 200, \co{INDETERMINE}, 0,5162 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{En ligne de commande}
+
+\co{httpx}, installé avec \co{requirements.txt}, permet les mêmes essais depuis un terminal. Le code Python
+est entre guillemets doubles, les chaînes à l'intérieur entre apostrophes :
+
+\begin{lstlisting}
+python -c "import httpx; print(httpx.get('http://127.0.0.1:8000/health').json())"
+python -c "import httpx; r = httpx.post('http://127.0.0.1:8000/predict', json={'text': 'Livraison rapide, produit conforme, très satisfait'}); print(r.status_code, r.json())"
+python -c "import httpx; print([httpx.post('http://127.0.0.1:8000/predict', json=c).status_code for c in ({'text': ''}, {}, {'text': 42})])"
+python -c "import httpx; r = httpx.post('http://127.0.0.1:8000/predict', json={'text': '   '}); print(r.status_code, r.json())"
+\end{lstlisting}
+
+\begin{attendu}[Sorties mesurées au TP3]
+\begin{lstlisting}
+{'status': 'OK', 'model': 'tfidf-logreg (TP2, models/sentiment.joblib)'}
+200 {'label': 'POSITIVE', 'score': 0.777, 'text': 'Livraison rapide, produit conforme, très satisfait'}
+[422, 422, 422]
+422 {'detail': 'texte vide'}
+\end{lstlisting}
+Après le TP4, la dernière ligne devient
+\co{422 \{\textquotesingle{}detail\textquotesingle{}: [\{\textquotesingle{}type\textquotesingle{}: \textquotesingle{}value\_error\textquotesingle{}, \textquotesingle{}loc\textquotesingle{}: [\textquotesingle{}body\textquotesingle{}, \textquotesingle{}text\textquotesingle{}], ...\}]\}}.
+\end{attendu}
+
+\subsection{Les tests automatiques}
+
+\co{tests/test\_api.py} contient six tests. Ils utilisent \co{TestClient}, qui appelle l'API en mémoire,
+sans serveur ; ils sont ignorés tant que le modèle n'existe pas sur le poste, et la CI entraîne le modèle
+avant de les lancer.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Test} & \textbf{Ce qu'il vérifie} \\
+\midrule
+\co{test\_root} & \co{GET /} répond 200 et indique la page \co{/docs} \\
+\co{test\_health} & \co{/health} : \co{status} vaut \co{OK} et le modèle est celui du TP2 \\
+\co{test\_predict\_positif} & Un avis évident reçoit \co{POSITIVE}, avec un score d'au moins 0,5 \\
+\co{test\_predict\_negatif} & Un avis évident reçoit \co{NEGATIVE} \\
+\co{test\_predict\_texte\_vide\_422} & \co{""} et \co{"\ \ \ "} reçoivent 422 \\
+\co{test\_predict\_champ\_manquant\_422} & \co{\{\}} et \co{\{"text": 42\}} reçoivent 422 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Le TP4 ajoute trois fichiers, écrits ou complétés par le binôme :
+
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Fichier} & \textbf{Ce qu'il vérifie} \\
+\midrule
+\co{tests/test\_limites.py} & Un test paramétré de huit cas au moins, aux frontières du contrat, avec la forme
+de chaque 422 ; deux propriétés hypothesis : tout texte non blanc de 1 à 2000 caractères reçoit 200, une
+étiquette du contrat et un score entre 0 et 1 ; tout texte de blancs reçoit 422 \\
+\co{tests/test\_integration.py} & Le démarrage réel ; le refus de démarrer sans modèle ; 503 quand le modèle
+est retiré ; 500, sans le message interne, quand le modèle plante ; le refus d'un modèle aux étiquettes
+inconnues \\
+\co{tests/test\_jeu\_or.py} & Les 20 avis du jeu d'or : aucune erreur franche ; une abstention est comptée,
+pas en échec ; une erreur connue est déclarée en \co{xfail(strict=True)} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{lstlisting}
+python -m pytest -q tests/test_api.py
+python -m pytest -v tests/test_api.py
+python -m pytest -q --cov=api --cov-report=term-missing
+\end{lstlisting}
+
+La première commande donne \co{6 passed}, la deuxième affiche le nom de chaque test, la troisième la
+couverture de \co{api/}, ligne par ligne.
+
+\subsection{Lire un refus 422}
+
+FastAPI répond à une requête invalide par un 422 dont \co{detail} est une liste d'objets : \co{loc} désigne
+le champ fautif (\co{["body", "text"]}), \co{msg} explique le refus, \co{type} le classe. Au TP3, un texte
+fait d'espaces passe le schéma, puis \co{predict()} le refuse : le 422 porte alors une simple chaîne,
+\co{"texte vide"}. Deux formes pour le même refus, c'est le premier défaut que le TP4 fait trouver.
+
+% =====================================================================
+\section{TP4 : tests approfondis et qualité}
+% =====================================================================
+
+Le TP4 n'ajoute presque rien à l'API : il cherche ses défauts, les corrige et installe les garde-fous qui
+empêcheront leur retour. Le seul changement visible est un troisième verdict, \co{INDETERMINE}, quand le
+modèle n'est pas assez sûr de lui. Sept contrôles (T21 à T27). Le sujet complet est dans
+\co{TP4-ENONCE.md}, le pas à pas dans \co{MARCHE-A-SUIVRE-TP4.md}, tous deux copiés dans le dépôt par le kit.
+
+\subsection{Avant la séance : le jeu d'or}
+
+Vingt avis rédigés par le binôme (dix chacun), absents des données d'entraînement, chacun avec l'étiquette
+attendue. Au moins cinq sont difficiles : négation, ironie, avis mitigé, avis d'un autre domaine. Une erreur
+franche que le modèle ne sait pas éviter reste dans le jeu, avec sa raison dans la colonne
+\co{erreur\_connue}.
+
+\begin{lstlisting}
+text,attendu,difficulte,erreur_connue
+"Commande reçue en deux jours, emballage soigné",POSITIVE,,
+"Pas déçu du tout, je recommande",POSITIVE,négation,
+"Arrivé cassé, bravo le transporteur",NEGATIVE,ironie,
+\end{lstlisting}
+
+\subsection{Étape A : installer le kit et mesurer le départ (T21)}
+
+\begin{lstlisting}
+cd C:\IA-DEV\sentiment-app
+Expand-Archive "$HOME\Downloads\tp4-tests-qualite-kit.zip" -DestinationPath C:\IA-DEV -Force
+python C:\IA-DEV\tp4-tests-qualite\appliquer_tp4.py C:\IA-DEV\sentiment-app --simulation
+python C:\IA-DEV\tp4-tests-qualite\appliquer_tp4.py C:\IA-DEV\sentiment-app
+pip install -r requirements-dev.txt
+python src/train.py
+python -m pytest -q
+\end{lstlisting}
+
+\begin{attendu}[T21 : le point de départ]
+\textbf{1 failed, 51 passed, 1 skipped}. L'échec est \co{test\_jeu\_or\_complet} (\og jeu d'or incomplet :
+0 avis sur 20 \fg{}) ; le test sauté attend ces mêmes avis (\og got empty parameter set \fg{}).
+\end{attendu}
+
+Mesurez ensuite le point de départ, sans rien corriger :
+
+\begin{lstlisting}
+python -m pytest -q --cov=api --cov-report=term-missing
+ruff check .
+mypy api
+notepad docs\semaine4.md
+\end{lstlisting}
+
+\begin{attendu}[Les trois mesures de départ]
+\begin{itemize}
+\item Couverture : \co{TOTAL} à 91 \%, six lignes manquantes dans \co{api/main.py} : 49 (le 503 quand le
+modèle n'est pas chargé), 77 à 79 (le 500 quand le modèle plante), 85 à 87 (le lancement direct, jamais
+exécuté sous pytest).
+\item ruff : 11 remarques. B904 deux fois dans \co{main.py} ; I001 et F401 dans \co{model.py} ; F401 et
+B905 deux fois dans \co{evaluate.py} ; I001 dans \co{test\_api.py} ; E741 trois fois dans deux tests du TP1.
+\item mypy : \co{Success: no issues found in 4 source files}.
+\end{itemize}
+Ces mesures vont dans les parties 1 et 5 de \co{docs/semaine4.md}. Commitez :
+\co{git add -A}, puis \co{git commit -m "TP4 : point de depart mesure"}.
+\end{attendu}
+
+\subsection{Étape B : le contrat d'entrée (T22, T23)}
+
+Complétez \co{tests/test\_limites.py} : un test paramétré de huit cas au moins (texte vide, espaces seuls,
+un caractère, 2000 et 2001 caractères, champ absent, \co{42}, corps qui n'est pas du JSON), qui vérifie
+aussi la forme de chaque 422 ; puis deux propriétés hypothesis.
+
+\begin{lstlisting}
+python -m pytest -q tests/test_limites.py
+\end{lstlisting}
+
+\begin{attendu}[Avant la correction : deux échecs voulus]
+\textbf{2 failed, 8 passed}. Le cas des espaces reçoit bien 422, mais sous une autre forme ; la propriété des
+blancs échoue aussi, et hypothesis montre son plus petit contre-exemple sous \og Falsifying example \fg{} :
+\co{texte=\textquotesingle{}\textbackslash x85\textquotesingle{}}, un caractère que \co{str.strip()} retire.
+\end{attendu}
+
+Corrigez ensuite le \emph{schéma}, pas le modèle : dans \co{api/schemas.py}, un \co{field\_validator} refuse
+un texte vide une fois ses blancs retirés, avec la même règle que \co{predict()} du TP2. Relancez trois fois.
+
+\begin{attendu}[T22 et T23]
+\textbf{10 passed}, trois fois de suite. Dans \co{/docs}, \co{\{"text": "\ \ \ "\}} reçoit un 422 dont
+\co{detail} est une liste, comme \co{\{"text": ""\}}.
+\end{attendu}
+
+\subsection{Étape C : l'abstention et le jeu d'or (T24, T25)}
+
+Dans \co{/docs}, envoyez trois textes faits de mots inventés : ils reçoivent tous \co{NEGATIVE} avec la même
+confiance, 0,5162. Sans mot connu, la représentation TF-IDF est nulle et il ne reste que l'ordonnée à
+l'origine de la régression logistique. Mesurez ensuite le compromis :
+
+\begin{lstlisting}
+python src/courbe_seuil.py
+\end{lstlisting}
+
+\begin{attendu}[La courbe du seuil]
+Les deux premières lignes sont :
+\begin{lstlisting}
+ seuil  répond à   part  exactitude  erreurs  vers un humain
+  0.50        58   100%       0.879        7               0
+\end{lstlisting}
+À 0,50, le modèle répond à tout : on retrouve l'exactitude et les 7 erreurs du TP2. Sinon, le modèle n'est
+pas celui du jeu de démonstration : relancez \co{python src/train.py}.
+\end{attendu}
+
+Dans \co{api/model.py}, sous le seuil (constante nommée \co{SEUIL\_ABSTENTION}, 0,60 par défaut),
+l'étiquette devient \co{INDETERMINE} et le score reste renvoyé. Copiez vos vingt avis dans
+\co{data/jeu\_or.csv}, puis :
+
+\begin{lstlisting}
+python src/bilan_jeu_or.py
+python -m pytest -q tests/test_jeu_or.py
+\end{lstlisting}
+
+\begin{attendu}[T24 et T25]
+Dans \co{/docs}, un texte inventé reçoit \co{INDETERMINE}. Le bilan compte les réponses justes, les
+abstentions et les erreurs franches déclarées ; il va dans \co{docs/semaine4.md}. Le test du jeu d'or
+n'affiche aucun \co{failed} : les erreurs déclarées apparaissent en \co{xfailed}.
+\end{attendu}
+
+\subsection{Étape D : l'API telle qu'elle tourne (T26)}
+
+Écrivez \co{tests/test\_integration.py} : démarrage réel (\co{with TestClient(app)}), modèle absent (chemin
+redirigé avec \co{monkeypatch}, cache vidé avec \co{charger\_modele.cache\_clear()}), modèle retiré de
+\co{app.state}, modèle en panne (\co{RuntimeError}, puis \co{ValueError("bug interne")}).
+
+\begin{lstlisting}
+python -m pytest -q tests/test_integration.py
+python -m pytest -q --cov=api --cov-report=term-missing --cov-fail-under=95
+\end{lstlisting}
+
+\begin{attendu}[T26]
+Avant la correction de \co{main.py}, la panne \co{ValueError} reçoit 422 avec le message interne : c'est le
+défaut à trouver. Une fois la conversion de \co{ValueError} en 422 retirée, toute panne répond 500, et la
+sortie se termine par \co{Required test coverage of 95\% reached} : 97 \% sans exclusion, 100 \% avec le
+bloc \co{\_\_main\_\_} exclu et justifié.
+\end{attendu}
+
+\subsection{Étape E : qualité statique, crochet et CI (T27)}
+
+\textbf{Le contrat typé.} mypy ne dit rien, parce que \co{predict()} renvoie un \co{dict} : tout ce qui en
+sort est \co{Any}. Donnez un \co{TypedDict} au retour de \co{predict()} et de
+\co{SentimentClassifier.predict}, avec une étiquette \co{Literal["POSITIVE", "NEGATIVE", "INDETERMINE"]}.
+mypy signale alors \co{.upper()} : remplacez-le par une correspondance explicite, vérifiée au démarrage.
+
+\textbf{ruff.} \co{ruff check . -{}-fix} règle l'essentiel. Le reste se corrige à la main : \co{strict=True}
+dans les deux \co{zip()} de \co{evaluate.py}, \co{from None} sur le \co{raise} du 500, et le renommage de
+\co{l} en \co{ligne} dans deux tests du TP1, sans remplacement automatique, qui abîmerait les « l' » des
+messages :
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Fichier, ligne} & \textbf{Correction} \\
+\midrule
+\co{test\_cadrage.py}, 51 & \co{l for l in body.splitlines() if l.strip() ...} devient
+\co{ligne for ligne in body.splitlines() if ligne.strip() ...}, et de même pour les deux \co{startswith} \\
+\co{test\_environment.py}, 38 & \co{[l.strip() for l in} devient \co{[ligne.strip() for ligne in} \\
+\co{test\_environment.py}, 39 & \co{[l for l in lines if l and not l.startswith("\#")]} devient
+\co{[ligne for ligne in lines if ligne and not ligne.startswith("\#")]} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Le crochet.} Installez-le, puis vérifiez qu'il refuse un commit fautif :
+
+\begin{lstlisting}
+pre-commit install
+Add-Content src\courbe_seuil.py "import os"
+git add src\courbe_seuil.py
+git commit -m "essai"
+git restore --staged src\courbe_seuil.py
+git restore src\courbe_seuil.py
+\end{lstlisting}
+
+La ligne \co{ruff} passe en \co{Failed} et le commit n'est pas créé ; les deux dernières commandes annulent
+l'essai.
+
+\textbf{La CI.} Dans \co{.github\bs workflows\bs ci.yml}, remplacez les deux lignes de l'étape
+\og Tests \fg{} par les quatre étapes de \co{ci-tp4.yml}, avec le même retrait de six espaces. Chacune
+active l'environnement virtuel, comme les étapes du TP1 :
+
+\begin{lstlisting}
+      - name: Outils de qualité (TP4)
+        run: . .venv/bin/activate && pip install -r requirements-dev.txt
+      - name: ruff
+        run: . .venv/bin/activate && ruff check .
+      - name: mypy
+        run: . .venv/bin/activate && mypy api
+      - name: Tests et couverture
+        run: . .venv/bin/activate && pytest -q --cov=api --cov-report=term-missing --cov-fail-under=95
+\end{lstlisting}
+
+\begin{lstlisting}
+ruff check .
+mypy api
+python -m pytest -q
+git add -A
+git commit -m "Semaine 4 : tests approfondis et qualite"
+git push
+\end{lstlisting}
+
+\begin{attendu}[T27 : tout est vert, en local et en CI]
+\co{All checks passed!}, puis \co{Success: no issues found in 4 source files}, puis aucun \co{failed} :
+83 passed et 2 xfailed avec le corrigé, vos nombres pouvant être plus grands. Dans l'onglet Actions, les
+étapes ruff, mypy et \og Tests et couverture \fg{} passent.
+\end{attendu}
+
+\textbf{Membre B} : \co{git pull}, \co{pip install -r requirements-dev.txt}, \co{python src/train.py},
+\co{pre-commit install} (le crochet s'installe dans chaque clone), puis \co{python -m pytest -q}.
+
+% =====================================================================
+\section{TP5 : l'interface Streamlit}
+% =====================================================================
+
+Le TP5 donne au service client une page web pour analyser un avis, ou tout un fichier d'avis. Sept contrôles
+(T28 à T34).
+
+\subsection{Le rôle de l'interface}
+
+La page est un client de l'API, comme n'importe quel programme : elle envoie \co{POST /predict} et traduit
+chaque réponse en message clair, y compris l'abstention et les erreurs. Elle n'importe jamais
+\co{predict()} ni le fichier \co{.joblib} (troisième règle d'architecture) : un modèle réentraîné ne demande
+aucune modification de l'interface. Deux programmes tournent donc en même temps : l'API sur le port 8000, la
+page sur le port 8501.
+
+Une application Streamlit est un script Python ordinaire, réexécuté de haut en bas à chaque action de
+l'utilisateur. Les composants (\co{st.text\_area}, \co{st.button}, \co{st.file\_uploader}) renvoient leur valeur
+courante ; les affichages (\co{st.metric}, \co{st.warning}, \co{st.error}) écrivent dans la page.
+
+\subsection{Installer le kit (T28)}
+
+\begin{lstlisting}
+cd C:\IA-DEV\sentiment-app
+Expand-Archive "$HOME\Downloads\tp5-interface-kit.zip" -DestinationPath C:\IA-DEV -Force
+python C:\IA-DEV\tp5-interface\appliquer_tp5.py C:\IA-DEV\sentiment-app --simulation
+python C:\IA-DEV\tp5-interface\appliquer_tp5.py C:\IA-DEV\sentiment-app
+python src/train.py
+python -m pytest -q
+\end{lstlisting}
+
+\begin{attendu}[T28 : douze tests de plus, aucun échec]
+La simulation liste \co{ui/}, \co{tests/test\_client.py}, \co{tests/test\_interface.py},
+\co{data/avis\_exemple.csv}, \co{docs/semaine5.md}, puis l'ajout de \co{!data/avis\_exemple.csv} au
+\co{.gitignore} et de Streamlit à la CI. pytest n'affiche aucun \co{failed} : douze tests de plus qu'à la fin du
+TP4, soit 95 passed et 2 xfailed avec le corrigé du TP4. Streamlit est déjà installé par \co{requirements.txt}.
+\end{attendu}
+
+\subsection{La structure de l'interface (étape B, 20 min)}
+
+L'interface tient en trois fichiers, et chacun a un seul rôle : la page affiche, le client parle à l'API, l'API
+décide. Comprendre cette séparation, c'est comprendre pourquoi un modèle réentraîné, ou une API déplacée sur
+un autre serveur, ne demande aucune modification de la page.
+
+\subsubsection{Trois fichiers, trois rôles}
+
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Fichier} & \textbf{Rôle} \\
+\midrule
+\co{ui/\_\_init\_\_.py} & Fait de \co{ui/} un paquet Python : \co{from ui import client} devient possible \\
+\co{ui/client.py} & Parle à l'API : santé, prédiction, lot d'avis, résumé ; traduit chaque réponse \\
+\co{ui/app.py} & La page Streamlit : elle affiche, elle ne décide rien \\
+\co{tests/test\_client.py} & Sept tests du client, contre l'API en mémoire \\
+\co{tests/test\_interface.py} & Cinq tests de la page, avec l'outil de test de Streamlit (\co{AppTest}) \\
+\co{data/avis\_exemple.csv} & Six avis pour essayer l'onglet \og Un fichier d'avis \fg{} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+La page n'importe jamais \co{predict()}, ni \co{api/}, ni le fichier \co{.joblib} : elle ne connaît que
+\co{ui.client}. Le client, lui, ne connaît que l'adresse de l'API et ses codes de réponse.
+
+\subsubsection{La page, zone par zone}
+
+La page a deux onglets. À gauche, l'onglet \og Un avis \fg{} après une analyse ; à droite, l'onglet
+\og Un fichier d'avis \fg{} après le chargement de \co{data/avis\_exemple.csv}.
+
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[font=\small, x=1cm, y=1cm,
+  zone/.style={circle, fill=orangef, text=white, font=\scriptsize\bfseries, inner sep=0pt, minimum size=4.4mm},
+  champ/.style={draw=cadregroupe, fill=white, rounded corners=1pt},
+  bouton/.style={draw=bleu, fill=fondbleu, rounded corners=2pt, font=\scriptsize, inner sep=3pt},
+  fin/.style={font=\scriptsize, text=trait, anchor=west}]
+% ---------- onglet « Un avis »
+\draw[cadregroupe, fill=fondgroupe, rounded corners=3pt] (0,0) rectangle (7.4,6.6);
+\draw[cadregroupe, fill=white] (0,6.1) rectangle (7.4,6.6);
+\node[fin, font=\scriptsize\ttfamily] at (0.2,6.35) {localhost:8501};
+\node[anchor=west, font=\large\bfseries] at (0.3,5.55) {Analyse de sentiment des avis};
+\node[fin, font=\tiny] at (0.3,5.0) {API prête : tfidf-logreg (TP2, models/sentiment.joblib)};
+\node[anchor=west, font=\scriptsize\bfseries, text=bleu] at (0.3,4.45) {Un avis};
+\draw[bleu, thick] (0.35,4.24) -- (1.35,4.24);
+\node[fin] at (1.6,4.45) {Un fichier d'avis};
+\draw[cadregroupe] (0.3,4.2) -- (7.1,4.2);
+\node[anchor=west, font=\scriptsize] at (0.3,3.85) {Avis client};
+\draw[champ] (0.3,2.65) rectangle (7.1,3.6);
+\node[anchor=north west, font=\scriptsize, text=trait] at (0.35,3.55) {Livraison rapide, produit conforme, très satisfait};
+\node[bouton, anchor=west] at (0.3,2.2) {Analyser};
+\node[fin] at (0.3,1.55) {Avis positif};
+\node[anchor=west, font=\LARGE] at (0.3,0.95) {78 \%};
+\node[zone] at (7.0,5.55) {1};
+\node[zone] at (7.0,5.0) {2};
+\node[zone] at (3.6,4.45) {3};
+\node[zone] at (7.0,3.1) {4};
+\node[zone] at (2.2,1.25) {5};
+% ---------- onglet « Un fichier d'avis »
+\begin{scope}[xshift=8.0cm]
+\draw[cadregroupe, fill=fondgroupe, rounded corners=3pt] (0,0) rectangle (7.4,6.6);
+\draw[cadregroupe, fill=white] (0,6.1) rectangle (7.4,6.6);
+\node[fin, font=\scriptsize\ttfamily] at (0.2,6.35) {localhost:8501};
+\node[anchor=west, font=\large\bfseries] at (0.3,5.55) {Analyse de sentiment des avis};
+\node[fin, font=\tiny] at (0.3,5.0) {API prête : tfidf-logreg (TP2, models/sentiment.joblib)};
+\node[fin] at (0.3,4.45) {Un avis};
+\node[anchor=west, font=\scriptsize\bfseries, text=bleu] at (1.3,4.45) {Un fichier d'avis};
+\draw[bleu, thick] (1.35,4.24) -- (3.2,4.24);
+\draw[cadregroupe] (0.3,4.2) -- (7.1,4.2);
+\draw[champ, dashed] (0.3,3.25) rectangle (7.1,3.95);
+\node[font=\scriptsize, text=trait] at (3.7,3.6) {Déposer un fichier CSV avec une colonne text};
+\draw[champ] (0.3,1.6) rectangle (7.1,3.05);
+\draw[cadregroupe] (0.3,2.67) -- (7.1,2.67);
+\node[anchor=west, font=\tiny\bfseries] at (0.4,2.86) {text};
+\node[anchor=west, font=\tiny\bfseries] at (3.6,2.86) {verdict};
+\node[anchor=west, font=\tiny\bfseries] at (6.1,2.86) {confiance};
+\node[anchor=west, font=\tiny] at (0.4,2.45) {Livraison rapide, produit\ldots};
+\node[anchor=west, font=\tiny] at (3.6,2.45) {Avis positif};
+\node[anchor=west, font=\tiny] at (6.1,2.45) {0.777};
+\node[anchor=west, font=\tiny] at (0.4,2.12) {Produit cassé et service\ldots};
+\node[anchor=west, font=\tiny] at (3.6,2.12) {Avis négatif};
+\node[anchor=west, font=\tiny] at (6.1,2.12) {0.7465};
+\node[anchor=west, font=\tiny] at (0.4,1.79) {xqzvb wlkptr grombu};
+\node[anchor=west, font=\tiny] at (3.6,1.79) {Je ne sais pas\ldots};
+\node[anchor=west, font=\tiny] at (6.1,1.79) {0.5162};
+\node[fin, font=\tiny\ttfamily] at (0.3,1.22) {\{INDETERMINE: 1, NEGATIVE: 2, POSITIVE: 3\}};
+\node[bouton, anchor=west] at (0.3,0.6) {Télécharger les résultats};
+\node[zone] at (7.0,3.6) {6};
+\node[zone] at (7.2,2.12) {7};
+\node[zone] at (5.6,1.22) {8};
+\node[zone] at (4.3,0.6) {9};
+\end{scope}
+\end{tikzpicture}%
+}
+\end{center}
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}c >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{5.2cm} l@{}}
+\toprule
+\textbf{Zone} & \textbf{Ce que voit l'utilisateur} & \textbf{Appel Streamlit} & \textbf{Fonction du client} \\
+\midrule
+1 & Le titre de la page & \co{st.title} & \\
+2 & L'état de l'API, vérifié à chaque réexécution & \co{st.caption}, ou \co{st.error} & \co{sante()} \\
+3 & Les deux onglets & \co{st.tabs} & \\
+4 & Le champ de l'avis et le bouton & \co{st.text\_area}, \co{st.button} & \\
+5 & Le verdict et la confiance ; l'abstention, le refus ou l'erreur & \co{st.metric}, \co{st.info}, \co{st.warning}, \co{st.error} & \co{predire()} \\
+6 & Le dépôt du fichier CSV & \co{st.file\_uploader} & \\
+7 & Le tableau des verdicts & \co{st.dataframe} & \co{predire\_lot()} \\
+8 & Le résumé par verdict & \co{st.write} & \co{resumer()} \\
+9 & Le téléchargement des résultats & \co{st.download\_button} & \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsubsection{Le chemin d'une requête}
+
+Un clic sur \og Analyser \fg{} traverse toute l'application, puis la réponse revient en sens inverse, traduite
+à chaque étage :
+
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[font=\small,
+  etape/.style={draw=bleu, rounded corners=2pt, fill=white, align=center, inner sep=4pt, minimum height=12mm, text width=24mm},
+  aller/.style={-{Stealth[length=2mm]}, thick, color=trait},
+  retour/.style={-{Stealth[length=2mm]}, thick, dashed, color=vert},
+  etiq/.style={font=\scriptsize, color=trait, align=center}]
+\node[etape, draw=vert, text=vert] (u) {Utilisateur\\\scriptsize clic sur Analyser};
+\node[etape, right=9mm of u] (app) {\texttt{ui/app.py}\\\scriptsize affiche};
+\node[etape, right=9mm of app] (cli) {\texttt{ui/client.py}\\\scriptsize traduit};
+\node[etape, right=9mm of cli] (api) {API\\\scriptsize \texttt{POST /predict}};
+\node[etape, right=9mm of api] (mod) {\texttt{api/model.py}\\\scriptsize seuil d'abstention};
+\node[etape, right=9mm of mod] (pre) {\texttt{predict()}\\\scriptsize modèle du TP2};
+\draw[aller] ([yshift=2mm]u.east) -- ([yshift=2mm]app.west);
+\draw[aller] ([yshift=2mm]app.east) -- node[etiq, above]{texte} ([yshift=2mm]cli.west);
+\draw[aller] ([yshift=2mm]cli.east) -- node[etiq, above]{JSON} ([yshift=2mm]api.west);
+\draw[aller] ([yshift=2mm]api.east) -- ([yshift=2mm]mod.west);
+\draw[aller] ([yshift=2mm]mod.east) -- ([yshift=2mm]pre.west);
+\draw[retour] ([yshift=-2mm]pre.west) -- ([yshift=-2mm]mod.east);
+\draw[retour] ([yshift=-2mm]mod.west) -- ([yshift=-2mm]api.east);
+\draw[retour] ([yshift=-2mm]api.west) -- node[etiq, below=2pt]{200, 422\\ou 503} ([yshift=-2mm]cli.east);
+\draw[retour] ([yshift=-2mm]cli.west) -- node[etiq, below=2pt]{\texttt{Reponse}} ([yshift=-2mm]app.east);
+\draw[retour] ([yshift=-2mm]app.west) -- node[etiq, below=2pt]{verdict\\ou message} ([yshift=-2mm]u.east);
+\node[etiq, below=9mm of api, text width=60mm] {port 8000 : un autre programme, joignable ou non};
+\node[etiq, below=9mm of app, text width=40mm] {port 8501 : la page};
+\end{tikzpicture}%
+}
+\end{center}
+
+La page et l'API sont deux programmes distincts. Entre les deux, tout peut arriver : l'API arrêtée, le modèle
+absent, un texte refusé. C'est le client qui transforme chacun de ces cas en message, pour que la page n'ait
+jamais à interpréter un code HTTP.
+
+\subsubsection{Le code de la page, bloc par bloc}
+
+\co{ui/app.py} se lit de haut en bas, en quatre blocs.
+
+\textbf{Bloc 1, les imports.} Streamlit ajoute au chemin de Python le dossier du script, \co{ui/}, et non la
+racine du dépôt : sans la ligne \co{sys.path.insert}, \co{from ui import client} échouerait.
+
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # pour importer ui.client
+
+import pandas as pd
+import streamlit as st
+
+from ui import client
+\end{lstlisting}
+
+\textbf{Bloc 2, la page et l'état de l'API.} La connexion est créée par \co{client.creer\_session()}, et
+non directement : c'est ce point que les tests remplacent. \co{sante()} interroge \co{/health} ; la réponse
+s'affiche en haut de la page, en légende si l'API est prête, en erreur sinon.
+
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+st.set_page_config(page_title="Analyse de sentiment")
+st.title("Analyse de sentiment des avis")
+
+session = client.creer_session()
+etat = client.sante(session)
+if etat.ok:
+    st.caption(f"API prête : {etat.message}")
+else:
+    st.error(etat.message)
+\end{lstlisting}
+
+\textbf{Bloc 3, l'onglet \og Un avis \fg{}.} Le bouton déclenche \co{predire()}, qui renvoie une
+\co{Reponse}. Selon son contenu, la page choisit l'affichage : le verdict et son pourcentage, un encadré de
+plus pour l'abstention, un avertissement pour un texte refusé, une erreur pour tout le reste.
+
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+onglet_avis, onglet_lot = st.tabs(["Un avis", "Un fichier d'avis"])
+
+with onglet_avis:
+    texte = st.text_area("Avis client")
+    if st.button("Analyser"):
+        reponse = client.predire(session, texte)
+        if reponse.ok and reponse.label is not None and reponse.score is not None:
+            st.metric(client.VERDICTS[reponse.label], f"{reponse.score:.0%}")
+            if reponse.label == "INDETERMINE":
+                st.info("La confiance est sous le seuil d'abstention : un humain doit trancher.")
+        elif reponse.message == client.REFUS:
+            st.warning(reponse.message)
+        else:
+            st.error(reponse.message)
+\end{lstlisting}
+
+\textbf{Bloc 4, l'onglet \og Un fichier d'avis \fg{}.} Le fichier est lu par pandas ; sans colonne
+\co{text}, la page le dit et s'arrête là. Sinon, \co{predire\_lot()} envoie chaque avis à l'API, deux colonnes
+s'ajoutent au tableau, et \co{resumer()} compte les verdicts. Le bouton de téléchargement renvoie le tableau
+complété, au format CSV.
+
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+with onglet_lot:
+    fichier = st.file_uploader("Fichier CSV avec une colonne text", type="csv")
+    if fichier is not None:
+        avis = pd.read_csv(fichier)
+        if "text" not in avis.columns:
+            st.error("Colonne text absente du fichier.")
+        else:
+            reponses = client.predire_lot(session, avis["text"].astype(str).tolist())
+            avis["verdict"] = [client.VERDICTS[r.label] if r.ok and r.label else r.message for r in reponses]
+            avis["confiance"] = [r.score for r in reponses]
+            st.dataframe(avis, use_container_width=True)
+            st.write(client.resumer(reponses))
+            st.download_button("Télécharger les résultats", avis.to_csv(index=False),
+                               file_name="resultats.csv", mime="text/csv")
+\end{lstlisting}
+
+\subsubsection{Le client : un contrat simple pour la page}
+
+Toute réponse de l'API devient une \co{Reponse} : soit un verdict (\co{ok} vrai, une étiquette et un score),
+soit un message prêt à afficher (\co{ok} faux).
+
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+@dataclass
+class Reponse:
+    """Ce que l'interface affiche : un verdict, ou un message d'erreur lisible."""
+
+    ok: bool
+    label: str | None = None
+    score: float | None = None
+    message: str = ""
+
+
+def creer_session() -> httpx.Client:
+    """La connexion à l'API. Les tests la remplacent par un client en mémoire."""
+    return httpx.Client(base_url=API_URL, timeout=10)
+\end{lstlisting}
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash}p{5.0cm} X@{}}
+\toprule
+\textbf{Réponse de l'API} & \textbf{\co{Reponse} renvoyée} & \textbf{Affichage de la page} \\
+\midrule
+200, \co{\{label, score\}} & \co{ok=True}, l'étiquette et le score & Le verdict et son pourcentage ; un encadré de plus pour \co{INDETERMINE} \\
+422 & \co{ok=False}, \co{message=REFUS} & Avertissement \og Texte refusé \fg{} \\
+503 & \co{ok=False}, \co{message=SANS\_MODELE} & Erreur \og Modèle non chargé \fg{} \\
+Connexion impossible & \co{ok=False}, \co{message=INJOIGNABLE} & Erreur \og API injoignable \fg{} \\
+Tout autre code & \co{ok=False}, \og Erreur interne de l'API \fg{} & Erreur, avec le code \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsubsection{Le cycle de Streamlit}
+
+À chaque action de l'utilisateur, un clic, un fichier déposé, Streamlit réexécute tout le script, du haut vers
+le bas. Trois conséquences :
+
+\begin{itemize}
+\item La connexion est recréée et la santé de l'API revérifiée à chaque fois : c'est pourquoi l'arrêt de l'API
+se voit dès le rechargement de la page, avant même d'analyser un avis.
+\item Les composants gardent leur valeur d'une exécution à l'autre : le texte saisi et le fichier déposé ne
+sont pas perdus.
+\item Le lot est recalculé à chaque réexécution, y compris au clic sur \og Télécharger \fg{}. Sans conséquence
+pour six avis, coûteux pour dix mille : mettre ce calcul en cache avec \co{@st.cache\_data} est une piste
+d'amélioration.
+\end{itemize}
+
+\subsubsection{Comment les tests se branchent}
+
+\co{tests/test\_client.py} passe au client un \co{TestClient}, qui fait tourner l'API en mémoire.
+\co{tests/test\_interface.py} va plus loin : il remplace \co{client.creer\_session} par ce même
+\co{TestClient}, puis exécute la page avec \co{AppTest}, saisit un texte, clique sur le bouton, et lit ce que la
+page affiche (\co{page.metric}, \co{page.warning}, \co{page.error}). Ni l'API ni la page n'ont besoin d'être
+lancées : pytest et la CI vérifient tout, à chaque push.
+
+\subsection{Lancer et analyser (T29 à T31)}
+
+Deux terminaux, dans le dépôt, environnement activé :
+
+\begin{lstlisting}
+uvicorn api.main:app --reload
+\end{lstlisting}
+
+\begin{lstlisting}
+streamlit run ui/app.py
+\end{lstlisting}
+
+Au tout premier lancement, Streamlit demande une adresse électronique dans le terminal : appuyez sur Entrée,
+ou lancez avec \co{-{}-server.headless true}. La page s'ouvre sur \url{http://localhost:8501}.
+
+\begin{attendu}[T29 à T31]
+\begin{center}
+\begin{tabularx}{0.95\textwidth}{@{}l >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Contrôle} & \textbf{Ce qu'on fait} & \textbf{Ce que la page affiche} \\
+\midrule
+T29 & On ouvre la page & \co{API prête : tfidf-logreg (TP2, models/sentiment.joblib)} \\
+T30 & \og Livraison rapide, produit conforme, très satisfait \fg{} & Avis positif, 78 \% \\
+T30 & \og Produit cassé et service injoignable, à fuir \fg{} & Avis négatif, 75 \% \\
+T31 & \og xqzvb wlkptr grombu \fg{} & Je ne sais pas : à faire vérifier par un humain, 52 \%, et le message
+\og la confiance est sous le seuil d'abstention \fg{} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+\end{attendu}
+
+\subsection{Provoquer les erreurs (T32)}
+
+Saisissez trois espaces, puis \og Analyser \fg{}. Arrêtez ensuite l'API (\co{Ctrl+C} dans son terminal) et
+rechargez la page. Relancez l'API pour la suite.
+
+\begin{attendu}[T32 : chaque erreur a son message]
+Les espaces donnent l'avertissement \og Texte refusé : vide, fait d'espaces, ou de plus de 2000 caractères \fg{}
+(réponse 422). L'API arrêtée donne, en haut de la page, \og API injoignable : lancez d'abord uvicorn
+api.main:app \fg{}.
+\end{attendu}
+
+\subsection{Un fichier d'avis (T33)}
+
+Dans l'onglet \og Un fichier d'avis \fg{}, chargez \co{data/avis\_exemple.csv}.
+
+\begin{attendu}[T33 : le lot]
+Un tableau de six avis avec leur verdict et leur confiance, le résumé
+\co{\{\textquotesingle{}INDETERMINE\textquotesingle{}: 1, \textquotesingle{}NEGATIVE\textquotesingle{}: 2, \textquotesingle{}POSITIVE\textquotesingle{}: 3\}},
+et le bouton \og Télécharger les résultats \fg{}, qui produit \co{resultats.csv}. Un avis sur six part vers un
+humain.
+\end{attendu}
+
+\subsection{Compte rendu, push, CI (T34)}
+
+Les trois questions de \co{docs/semaine5.md} : pourquoi l'interface n'importe-t-elle jamais le modèle ? Que
+montre-t-elle quand le modèle hésite, et pourquoi est-ce mieux qu'un verdict forcé ? Que voit l'utilisateur
+quand l'API tombe ?
+
+\begin{lstlisting}
+git add -A
+git commit -m "Semaine 5 : interface Streamlit"
+git push
+\end{lstlisting}
+
+\begin{attendu}[T34 : la CI est verte]
+La CI installe Streamlit et rejoue les douze tests du TP5. Pendant l'installation des outils du TP4, pip peut
+écrire \co{streamlit 1.39.1 requires packaging<25} : c'est sans conséquence, les tests de l'interface passent.
+\end{attendu}
+
+\textbf{Membre B} : \co{git pull}, \co{python src/train.py}, \co{python -m pytest -q}, puis les essais T29 à
+T33 sur son poste.
+
+% =====================================================================
+\section{Vérification et notation par l'enseignant}
+% =====================================================================
+
+\subsection{L'accès aux dépôts}
+
+Chaque dépôt est privé. Le membre A y invite le compte \co{Larhlimiabd-ai} (Settings, Collaborators,
+Add people). L'enseignant accepte l'invitation depuis le courriel de GitHub ou depuis
+\url{https://github.com/<compte-A>/<depot>/invitations} ; elle expire au bout de sept jours. Sur le poste de
+l'enseignant, l'adresse des dépôts porte son compte, pour que Git n'envoie pas d'autres identifiants :
+\co{https://Larhlimiabd-ai@github.com/<compte-A>/<depot>.git}.
+
+\subsection{En continu : la CI}
+
+La CI de chaque dépôt teste chaque push sur une machine neuve. L'onglet Actions montre, sans rien installer,
+où en est chaque binôme ; Insights, puis Contributors, montre les deux membres.
+
+\subsection{À la date de remise : la relève automatique}
+
+\co{releve\_binomes.py} vérifie tous les dépôts d'un coup. \co{binomes.csv} contient deux colonnes,
+\co{binome} et \co{depot}, une ligne par binôme. Le script se lance dans l'environnement du cours
+(Python 3.11, avec \co{requirements.txt} et \co{requirements-dev.txt} installés) :
+
+\begin{lstlisting}
+python releve_binomes.py binomes.csv --tp 3 --tests
+python releve_binomes.py binomes.csv --tp 4 --tests --date-limite "2026-10-25 23:59"
+python releve_binomes.py binomes.csv --tp 5 --tests
+\end{lstlisting}
+
+Pour chaque binôme, il reclone le dépôt à neuf dans \co{releve\bs}, se place sur le dernier commit avant la
+date limite et compte à part les commits plus tardifs. Il écrit \co{releve/releve-tpN.md}, à lire, et
+\co{releve/releve-tpN.csv}, pour un tableur.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Colonne} & \textbf{Ce qu'elle dit} \\
+\midrule
+\co{auteurs} & Le nombre d'auteurs et leurs noms \\
+\co{fichiers interdits} & \co{.venv}, modèle, \co{data/demo\_reviews.csv} ou \co{.env} versionnés \\
+\co{livrables} & Ce qui manque : fiches, \co{metrics.json}, comptes rendus encore à l'état de canevas, jeu d'or
+incomplet, pre-commit \\
+\co{tests du kit retouchés} & Les tests fournis modifiés depuis leur ajout \\
+\co{F1}, \co{pytest} & Avec \co{--tests} : l'entraînement et les tests rejoués \\
+\co{couverture}, \co{ruff}, \co{mypy} & Au TP4, avec \co{--tests} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{enseignant}[Lire la colonne « tests du kit retouchés »]
+Un test vert ne prouve rien si le binôme a modifié le test : l'essai du script sur un dépôt fautif l'a
+montré, avec un seuil de F1 abaissé dans \co{test\_model.py}. Regardez chaque fichier signalé avec
+\co{git log -p -{}- tests/<fichier>} dans le clone de \co{releve\bs}. Au TP4, trois retouches sont
+légitimes : l'ordre des imports de \co{test\_api.py} remis par ruff, ses étiquettes mises à jour après
+l'abstention, et le renommage de \co{l} en \co{ligne} dans \co{test\_cadrage.py} et
+\co{test\_environment.py}. Avec \co{--tests}, le script exécute le code des étudiants : lancez-le dans
+l'environnement du cours.
+\end{enseignant}
+
+\subsection{Le clone frais, à la main}
+
+Pour un binôme, ou en cas de doute sur la relève :
+
+\begin{lstlisting}
+cd $env:TEMP
+git clone https://Larhlimiabd-ai@github.com/<compte-A>/<depot>.git verif
+cd verif
+py -3.11 -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python scripts/check_setup.py
+python src/make_demo.py
+python src/train.py
+python -m pytest -q
+git shortlog -sn --all
+git log --format="%h %ad %an : %s" --date=short
+git log --all --oneline -- models/sentiment.joblib .venv
+\end{lstlisting}
+
+\begin{attendu}[Ce que l'enseignant doit voir]
+\co{0 erreur(s)} ; F1 macro 0,879 ; le compte de tests du TP rendu (48 passed au TP3) ; deux noms dans
+\co{shortlog} ; un historique où chaque membre a commité dans chaque TP ; rien pour la dernière commande, qui
+prouve que le modèle et l'environnement n'ont jamais été commités. Ensuite,
+\co{uvicorn api.main:app} et les essais T15 à T20 dans \co{/docs}. Au TP4, ajoutez
+\co{pip install -r requirements-dev.txt}, \co{ruff check .}, \co{mypy api} et
+\co{python -m pytest -q -{}-cov=api -{}-cov-fail-under=95}. Au TP5, \co{streamlit run ui/app.py} et les
+essais T29 à T33. Gardez l'environnement de ce clone : il contient tout
+le semestre, PyTorch compris, et sert à la relève des autres binômes.
+\end{attendu}
+
+\subsection{Les grilles de notation}
+
+Chaque TP est noté sur 10, s'il est tiré au sort. Les grilles sont celles des énoncés.
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}l X c >{\raggedright\arraybackslash}p{4.6cm}@{}}
+\toprule
+\textbf{TP} & \textbf{Critère} & \textbf{Pts} & \textbf{Vérification} \\
+\midrule
+TP1 & Fiches justifiées par deux critères, rubriques remplies & 4 & Lecture, \co{test\_cadrage.py} \\
+    & Dépôt clonable, installation sans erreur & 2 & Clone frais \\
+    & Structure et \co{.gitignore} conformes, \co{.venv/} absent de l'historique & 2 & \co{test\_environment.py}, \co{git log} \\
+    & Un commit par membre, messages explicites & 2 & \co{git shortlog}, \co{git log} \\
+\midrule
+TP2 & Modèle entraîné, sauvegardé, rechargeable par \co{predict()} & 3 & Clone frais, \co{src/predict.py} \\
+    & Évaluation correcte : découpage avant vectorisation, mesures sur le jeu de test & 3 & Code, \co{metrics.json} \\
+    & Les 4 tests du modèle, CI verte & 2 & pytest, Actions \\
+    & Analyse des erreurs & 2 & \co{docs/semaine2.md} \\
+\midrule
+TP3 & L'API répond : \co{/health}, avis positif, avis négatif & 3 & T15 à T17 \\
+    & Codes d'erreur justes : 422, refus de démarrer sans modèle & 2 & T18, T20 \\
+    & Tests verts en local et en CI & 2 & T14, T19 \\
+    & Les deux réponses, appuyées sur des observations & 3 & \co{docs/semaine3.md} \\
+\midrule
+TP4 & Contrat d'entrée : cas limites, propriétés, correction dans le schéma & 2 & T22, T23 \\
+    & Abstention : seuil mesuré et justifié, jeu d'or honnête & 2,5 & T24, T25 \\
+    & Intégration : démarrage, modèle absent, 503, 500 ; couverture de 95 \% sans exclusion abusive & 2 & T26 \\
+    & Qualité statique et automatisation : contrat typé, ruff et mypy muets, pre-commit, CI verte & 2 & T27 \\
+    & \co{docs/semaine4.md} : chaque défaut relié au test qui l'a trouvé, chiffres du binôme & 1,5 & T21 \\
+\midrule
+TP5 & La page fonctionne : un avis, verdict, confiance, abstention & 3 & T29 à T31 \\
+    & Les erreurs traduites pour l'utilisateur : 422, 503, API injoignable & 2 & T32 \\
+    & Le lot d'avis : tableau, résumé, téléchargement & 2 & T33 \\
+    & Tests du client et de la page verts, en local et en CI & 1,5 & T28, T34 \\
+    & \co{docs/semaine5.md} : les trois réponses, appuyées sur des observations & 1,5 & Lecture \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Les signaux d'alerte}
+
+\begin{itemize}
+\item Un seul commit géant qui contient tout un TP, ou un membre absent de l'historique d'un TP.
+\item Des fiches ou des comptes rendus identiques à ceux d'un autre binôme.
+\item Les valeurs du corrigé recopiées à la place des mesures du binôme.
+\item Un test fourni par un kit modifié pour passer, des \co{\# noqa} ou des \co{\# pragma: no cover} en
+série, un jeu d'or sans cas difficile.
+\end{itemize}
+
+% =====================================================================
+\section{Les messages d'erreur rencontrés}
+% =====================================================================
+
+Tous ces messages sont apparus pendant la mise au point de cette démarche, sur de vrais postes. Ceux marqués
+\emph{attendu} sont des étapes normales du parcours : ils désignent le travail qui reste à faire.
+
+\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{5.4cm} >{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}p{5.5cm}@{}}
+\toprule
+\textbf{Message ou symptôme} & \textbf{Cause} & \textbf{Correction} \\
+\midrule
+\endhead
+\multicolumn{3}{@{}l}{\textbf{Python et environnement}} \\
+\co{\textquotesingle{}pytest\textquotesingle{} n\textquotesingle{}est pas reconnu}, \co{No module named pytest} & Environnement virtuel non activé & \co{.venv\bs Scripts\bs Activate.ps1} \\
+\co{Activate.ps1} : l'exécution de scripts est désactivée & Politique d'exécution de Windows & \co{Set-ExecutionPolicy -Scope CurrentUser RemoteSigned}, une fois \\
+\co{\textquotesingle{}deactivate\textquotesingle{} n\textquotesingle{}est pas reconnu} & Invite cmd, aucun environnement actif & Sans conséquence. Dans cmd : \co{rmdir /s /q .venv}, \co{.venv\bs Scripts\bs activate.bat} \\
+\co{Compiler cl cannot compile programs}, \co{metadata-generation-failed} (pandas) & Python plus récent que 3.11 : pas de version précompilée, pip tente de compiler & Recréer l'environnement : \co{py -3.11 -m venv .venv} \\
+\co{ResolutionImpossible} : \co{pyarrow==21.0.*} contre \co{mlflow 2.17} & Ligne \co{pyarrow} contradictoire dans le \co{requirements.txt} du kit TP1 & Retirer la ligne (TP1, étape 2), et la corriger dans le dépôt du cours \\
+\co{No module named \textquotesingle{}joblib\textquotesingle{}} & Dépendances jamais installées dans cet environnement (clone de vérification) & \co{pip install -r requirements.txt} \\
+\co{Could not open requirements file: requirements-dev.txt} & Kit du TP4 pas encore installé & \co{appliquer\_tp4.py}, puis \co{pip} dans le dépôt \\
+\co{Could not open requirements file: requirements.txt} & \co{pip} lancé dans le dossier du kit & Se placer dans le dossier du dépôt \\
+\co{DeprecationWarning} (starlette, anyio, joblib) & Versions des bibliothèques & Sans conséquence \\
+\multicolumn{3}{@{}l}{\textbf{Git et GitHub}} \\
+\co{1 auteur(s) de commits, 2 attendus} & Le membre B n'a pas encore commité, ou les deux postes ont le même \co{user.name} & \emph{Attendu} après le premier push. Commit de B sous son identité \\
+\co{remote origin already exists} & Adresse déjà enregistrée & \co{git remote set-url origin <adresse>} \\
+\co{Permission ... denied to} un autre compte (403) & Windows envoie les identifiants d'un autre compte & Compte dans l'adresse : \url{https://<compte>@github.com/...} ; ou \co{cmdkey /delete:git:https://github.com} \\
+\co{src refspec main does not match any} & Aucun commit, ou branche \co{master} & \co{git commit}, puis \co{git branch -M main} \\
+\co{Updates were rejected} & Dépôt GitHub créé avec un README & Le recréer vide, ou \co{git pull origin main -{}-allow-unrelated-histories} \\
+\co{The requested URL returned error: 400} & Chevrons \co{<depot>} laissés dans l'adresse & La vraie adresse du dépôt \\
+\co{Repository not found} & Invitation non acceptée, ou mauvais compte & Accepter l'invitation ; compte dans l'adresse \\
+\co{CRLF will be replaced by LF} & Fins de ligne de Windows & Sans conséquence \\
+\multicolumn{3}{@{}l}{\textbf{Chemins et archives}} \\
+\co{ne ressemble pas au dépôt du TP1 (README.md et tests/ attendus)} & Chemin relatif faux : l'Explorateur a ajouté un dossier & Donner le chemin complet du dépôt \\
+\co{Expand-Archive} : le chemin d'accès n'existe pas & Archive ailleurs, ou renommée par le navigateur & \co{Get-ChildItem \$HOME -Recurse -Filter ...} \\
+\co{Rename-Item} : l'élément n'existe pas & Rien à renommer : modèle jamais entraîné, ou mise de côté non faite & \co{Get-ChildItem models}, puis \co{python src/train.py} \\
+\co{unrecognized arguments: puis git status -{}-short} & Deux commandes d'une case de tableau copiées comme une seule & Une commande par ligne \\
+\co{45 passed} au lieu de 48 & Dépôt d'une autre chaîne de kits, où le TP3 était l'interface & Utiliser les kits de ce guide \\
+\multicolumn{3}{@{}l}{\textbf{Tests et contrôles}} \\
+\co{rubriques vides ou trop courtes}, \co{cocher exactement une approche}, \co{la justification doit citer au moins deux critères} & \emph{Attendu} : fiches pas encore remplies (T1) & TP1, étape 3 \\
+\co{jeu d\textquotesingle{}or incomplet : 0 avis sur 20}, \co{got empty parameter set} & \emph{Attendu} : jeu d'or vide (T21) & Les vingt avis dans \co{data/jeu\_or.csv} \\
+ruff : B904, I001, F401, B905, E741 & \emph{Attendu} : point de départ du TP4 & TP4, étape E \\
+\co{2 failed} et \co{Falsifying example: texte=\textquotesingle{}\textbackslash x85\textquotesingle{}} & \emph{Attendu} : le défaut que l'étape B fait trouver & \co{field\_validator} dans le schéma \\
+\multicolumn{3}{@{}l}{\textbf{API et CI}} \\
+\co{FileNotFoundError: models/sentiment.joblib absent} au démarrage & Pas de modèle : contrôle T20 s'il a été mis de côté, sinon jamais entraîné & Remettre le modèle, ou \co{python src/train.py} \\
+\co{[WinError 10048]} : adresse déjà utilisée & Une autre API tourne déjà & Fermer l'autre terminal, ou \co{-{}-port 8001} \\
+CI : \co{No module named \textquotesingle{}api\textquotesingle{}} & \co{pytest.ini} sans \co{pythonpath = .} : la commande \co{pytest} seule ne trouve pas \co{api/} & Le kit du TP3 ajoute la ligne \\
+CI verte, mais tests de l'API ignorés & La CI n'entraîne pas le modèle & L'étape d'entraînement avant les tests \\
+CI du TP4 : outils introuvables & Étapes sans activation de l'environnement virtuel & Les quatre étapes de \co{ci-tp4.yml} \\
+\multicolumn{3}{@{}l}{\textbf{Interface Streamlit}} \\
+Streamlit demande une adresse électronique & Accueil du premier lancement & Entrée, ou \co{-{}-server.headless true} \\
+\og API injoignable \fg{} en haut de la page & L'API n'est pas lancée & \co{uvicorn api.main:app} dans un autre terminal \\
+Port 8501 déjà utilisé & Une autre page Streamlit tourne & La fermer, ou \co{-{}-server.port 8502} \\
+\co{streamlit 1.39.1 requires packaging<25} & Les outils du TP4 installent un \co{packaging} plus récent & Sans conséquence : les tests de l'interface passent \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+\appendix
+
+% =====================================================================
+\section{Récapitulatif des contrôles}
+\label{ann:controles}
+% =====================================================================
+
+\small
+\begin{longtable}{@{}l >{\raggedright\arraybackslash}p{6.2cm} >{\raggedright\arraybackslash}p{7.6cm}@{}}
+\toprule
+\textbf{Contrôle} & \textbf{Commande ou essai} & \textbf{Résultat attendu} \\
+\midrule
+\endhead
+\multicolumn{3}{@{}l}{\textbf{TP1}} \\
+T0 & \co{Get-ChildItem -Force} & Sept dossiers, \co{.github}, \co{.gitignore} \\
+T1 & \co{python -m pytest -q} & 3 failed, 31 passed, 4 skipped \\
+T2 & \co{python -m pytest tests/test\_cadrage.py -q} & 12 passed \\
+T3 & \co{git status} avant le commit & Ni \co{.venv/}, ni \co{.env}, ni \co{.joblib} \\
+T4 & \co{python scripts/check\_setup.py} (membre B) & 0 erreur(s) \\
+T5 & \co{git shortlog -sn -{}-all}, puis \co{python -m pytest tests/test\_git\_history.py -q} & Deux noms, puis 3 passed \\
+T6 & \co{check\_setup.py}, puis \co{python -m pytest -q} & 0 erreur(s), 0 avertissement(s) ; 38 passed ; CI verte \\
+T7 & La suite complète sur un clone frais & 38 passed, sans intervention \\
+\multicolumn{3}{@{}l}{\textbf{TP2}} \\
+C1 & \co{python -m pytest -q} & 2 failed, 38 passed, 2 skipped \\
+C2 & \co{python src/make\_demo.py} & 290 avis, 145 de chaque classe \\
+C3 & \co{python src/train.py}, puis \co{git status -{}-short} & F1 macro 0,879 ; \co{metrics.json} seul, sans le modèle \\
+C4 & \co{python src/evaluate.py} & 7 erreurs sur 58, toutes sur des avis mitigés \\
+C5 & \co{python src/train.py -{}-allocine}, puis \co{python -m pytest -q} & F1 macro 0,920 ; 42 passed ; CI verte \\
+\multicolumn{3}{@{}l}{\textbf{TP3}} \\
+T14 & \co{python -m pytest -q} & 48 passed \\
+T15 & \co{GET /health} & 200, \co{status} OK \\
+T16 & \co{POST /predict}, avis positif & 200, \co{POSITIVE}, 0,777 \\
+T17 & \co{POST /predict}, avis négatif & 200, \co{NEGATIVE}, 0,7465 \\
+T18 & Texte vide, champ absent, nombre & 422 dans les trois cas \\
+T19 & \co{git push}, onglet Actions & Entraînement, puis 48 passed \\
+T20 & \co{uvicorn api.main:app} sans modèle & \co{FileNotFoundError}, l'API ne démarre pas \\
+\multicolumn{3}{@{}l}{\textbf{TP4}} \\
+T21 & \co{python -m pytest -q} & 1 failed, 51 passed, 1 skipped \\
+T22 & \co{/docs}, trois espaces & 422, \co{detail} en liste \\
+T23 & \co{python -m pytest -q tests/test\_limites.py}, trois fois & 10 passed \\
+T24 & \co{/docs}, mots inventés & \co{INDETERMINE} \\
+T25 & \co{python -m pytest -q tests/test\_jeu\_or.py} & Aucun failed ; erreurs connues en xfailed \\
+T26 & \co{python -m pytest -q -{}-cov=api -{}-cov-fail-under=95} & Pannes en 500 ; seuil de 95 \% atteint \\
+T27 & \co{ruff check .}, \co{mypy api}, \co{python -m pytest -q}, push & Muets ; aucun failed ; CI verte \\
+\multicolumn{3}{@{}l}{\textbf{TP5}} \\
+T28 & \co{python -m pytest -q} & Aucun failed, douze tests de plus \\
+T29 & \co{streamlit run ui/app.py} & \og API prête \fg{} \\
+T30 & Un avis positif, un avis négatif & Avis positif 78 \%, avis négatif 75 \% \\
+T31 & Des mots inventés & \og Je ne sais pas \fg{}, 52 \% \\
+T32 & Trois espaces ; l'API arrêtée & \og Texte refusé \fg{} ; \og API injoignable \fg{} \\
+T33 & \co{data/avis\_exemple.csv} & 3 positifs, 2 négatifs, 1 à vérifier ; téléchargement \\
+T34 & \co{git push} & CI verte \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+% =====================================================================
+\section{PowerShell, cmd et bash}
+\label{ann:shells}
+% =====================================================================
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Action} & \textbf{PowerShell} & \textbf{cmd} & \textbf{bash} \\
+\midrule
+Créer l'environnement & \co{py -3.11 -m venv .venv} & \co{py -3.11 -m venv .venv} & \co{python3.11 -m venv .venv} \\
+L'activer & \co{.venv\bs Scripts\bs Activate.ps1} & \co{.venv\bs Scripts\bs activate.bat} & \co{source .venv/bin/activate} \\
+Le supprimer & \co{Remove-Item -Recurse -Force .venv} & \co{rmdir /s /q .venv} & \co{rm -rf .venv} \\
+Renommer un fichier & \co{Rename-Item a b} & \co{ren a b} & \co{mv a b} \\
+Lister, fichiers cachés compris & \co{Get-ChildItem -Force} & \co{dir /a} & \co{ls -a} \\
+Afficher un fichier & \co{Get-Content f} & \co{type f} & \co{cat f} \\
+Dossier temporaire & \co{cd \$env:TEMP} & \co{cd \%TEMP\%} & \co{cd /tmp} \\
+Variable d'environnement & \co{\$env:API\_URL = "..."} & \co{set API\_URL=...} & \co{export API\_URL=...} \\
+Modifier un fichier & \co{notepad f} & \co{notepad f} & \co{nano f} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Les commandes \co{python}, \co{pip}, \co{git}, \co{uvicorn}, \co{ruff}, \co{mypy} et \co{pre-commit} s'écrivent
+de la même façon partout ; seuls les séparateurs de chemin changent (\co{\bs} sous Windows, \co{/} ailleurs,
+\co{/} étant accepté par Python sous Windows).
+
+\end{document}
