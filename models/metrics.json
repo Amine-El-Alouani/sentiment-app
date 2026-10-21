@@ -1,0 +1,10 @@
+{
+  "source": "demo",
+  "date": "2026-10-21",
+  "n_train": 232,
+  "n_test": 58,
+  "f1_macro": 0.879,
+  "accuracy": 0.8793,
+  "recall_negative": 0.931,
+  "seuil_f1": 0.85
+}
