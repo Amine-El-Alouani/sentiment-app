@@ -13,10 +13,9 @@ python -m pip install pandas scikit-learn pytest
 
 ## streamlit: 
 
-conda create -n sentiment-py311 python=3.11 -y
-conda run -n sentiment-py311 python -m pip install \
-  pandas scikit-learn joblib streamlit pyarrow
-conda run -n sentiment-py311 python -m streamlit run ui/app.py
+.venv/bin/streamlit run ui/app.py
+.venv/bin/streamlit run ui/app.py --server.address 0.0.0.0 --server.port 8501
+.venv/bin/python -m uvicorn api.main:app --host 0.0.0.0 --port 8000
 
 ##
 
