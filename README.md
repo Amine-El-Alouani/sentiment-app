@@ -11,6 +11,15 @@ source .venv/bin/activate        # Windows PowerShell : .venv\Scripts\Activate.p
 python -m pip install pandas scikit-learn pytest
 ```
 
+## streamlit: 
+
+conda create -n sentiment-py311 python=3.11 -y
+conda run -n sentiment-py311 python -m pip install \
+  pandas scikit-learn joblib streamlit pyarrow
+conda run -n sentiment-py311 python -m streamlit run ui/app.py
+
+##
+
 Pour installer l'ensemble des dépendances des semaines suivantes, utilisez
 `python -m pip install -r requirements.txt` lorsque ces fonctionnalités sont nécessaires.
 
