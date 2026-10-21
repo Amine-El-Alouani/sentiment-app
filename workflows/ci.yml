@@ -1,0 +1,16 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  tp1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }          # tout l'historique : git shortlog compte les deux auteurs
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Environnement virtuel et dépendances
+        run: python -m venv .venv && . .venv/bin/activate && pip install pandas scikit-learn pytest
+      - name: Diagnostic
+        run: . .venv/bin/activate && python scripts/check_setup.py
+      - name: Tests
+        run: . .venv/bin/activate && pytest -q

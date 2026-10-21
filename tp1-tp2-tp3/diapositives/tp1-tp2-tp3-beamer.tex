@@ -1,0 +1,696 @@
+% =====================================================================
+%  Du cadrage à l'interface : TP1, TP2, TP3
+%  Module : Développement et déploiement d'applications intelligentes
+%  A. Larhlimi
+%  Compilation : pdflatex tp1-tp2-tp3-beamer.tex   (deux fois)
+% =====================================================================
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
+
+\usetheme{default}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{blocks}[rounded][shadow=false]
+
+\definecolor{navy}{HTML}{1B2A41}
+\definecolor{orangeacc}{HTML}{E07A2F}
+\definecolor{teal}{HTML}{2A9D8F}
+\definecolor{grisclair}{HTML}{F0EDE5}
+\definecolor{grismoyen}{HTML}{5B6572}
+
+\setbeamercolor{structure}{fg=navy}
+\setbeamercolor{frametitle}{fg=white,bg=navy}
+\setbeamercolor{title}{fg=navy}
+\setbeamercolor{section in toc}{fg=navy}
+\setbeamercolor{block title}{bg=teal,fg=white}
+\setbeamercolor{block body}{bg=teal!8}
+\setbeamercolor{block title alerted}{bg=orangeacc,fg=white}
+\setbeamercolor{block body alerted}{bg=orangeacc!10}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=3.4ex,dp=1.6ex,leftskip=0.8em,rightskip=0.8em]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle
+  \end{beamercolorbox}}
+\setbeamertemplate{footline}{%
+  \hbox{\begin{beamercolorbox}[wd=\paperwidth,ht=2.6ex,dp=1.2ex,leftskip=.6em,rightskip=.6em]{}%
+    \color{grismoyen}\scriptsize TP1, TP2, TP3 \textperiodcentered{} Du cadrage à l'interface
+    \hfill A. Larhlimi \hfill \insertframenumber
+  \end{beamercolorbox}}}
+
+\newcommand{\co}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\objectif}[1]{\begin{block}{Objectif}#1\end{block}}
+\newcommand{\controle}[2]{\begin{block}{Contrôle #1}#2\end{block}}
+\newcommand{\piege}[2]{\begin{alertblock}{#1}#2\end{alertblock}}
+
+\lstdefinestyle{tp}{
+  basicstyle=\ttfamily\scriptsize,
+  backgroundcolor=\color{grisclair},
+  frame=leftline, framerule=1.2pt, rulecolor=\color{teal},
+  xleftmargin=6pt, framexleftmargin=6pt,
+  breaklines=true, showstringspaces=false,
+  commentstyle=\color{grismoyen}\itshape,
+  keywordstyle=\color{navy}\bfseries,
+  extendedchars=true,
+  literate={é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {à}{{\`a}}1 {â}{{\^a}}1
+           {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1 {ù}{{\`u}}1 {ç}{{\c c}}1
+           {É}{{\'E}}1 {À}{{\`A}}1 {Ô}{{\^O}}1 {È}{{\`E}}1
+           {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1 {·}{{\textperiodcentered}}1
+           {├}{{\textbar}}1 {└}{{\textbar}}1 {│}{{\textbar}}1 {─}{{-}}1 {’}{{'}}1
+}
+\lstset{style=tp}
+\renewcommand{\arraystretch}{1.2}
+
+\AtBeginSection[]{%
+  \begin{frame}[plain]{Plan}
+    \tableofcontents[currentsection, sectionstyle=show/shaded]
+  \end{frame}}
+
+\title{\textbf{Du cadrage à l'interface}}
+\subtitle{TP1, TP2, TP3 : une application de sentiment, de A à Z}
+\author{A. Larhlimi}
+\institute{Développement et déploiement d'applications intelligentes}
+\date{Trois séances de 2 h \textperiodcentered{} travail en binôme}
+
+\begin{document}
+
+{\setbeamertemplate{footline}{}
+\begin{frame}[plain]\titlepage\end{frame}}
+
+\begin{frame}[plain]{Plan}\tableofcontents\end{frame}
+
+% =====================================================================
+\section{L'objectif}
+% =====================================================================
+
+\begin{frame}{Ce que l'on construit en trois séances}
+\objectif{Une application d'analyse de sentiment d'avis clients en français, complète :
+un modèle entraîné, testé, et une interface qu'une personne non technique peut utiliser.}
+\vspace{4pt}
+\small
+Le besoin métier : une équipe relation client reçoit des milliers d'avis par jour et les traite
+dans l'ordre d'arrivée. On veut faire remonter les \textbf{avis négatifs} en tête de file.
+\vspace{4pt}
+\begin{center}\scriptsize
+\begin{tabular}{@{}p{1.2cm}p{6.6cm}p{3.0cm}p{2.4cm}@{}}
+\toprule
+\textbf{Séance} & \textbf{Ce que le binôme produit} & \textbf{Contrôles} & \textbf{Tests} \\
+\midrule
+TP1 & Dépôt structuré, environnement reproductible, trois fiches de cadrage & T0 à T7 & 38 \\
+TP2 & Le modèle : entraînement, évaluation, métriques versionnées & C1 à C5 & 42 \\
+TP3 & L'interface de démonstration Streamlit & S1 à S4 & 45 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{2pt}
+\centering\small Un seul dépôt, \co{sentiment-app}, du premier jour au dernier.
+\end{frame}
+
+\begin{frame}{Pourquoi un problème aussi simple}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+  \begin{block}{Ce qui est facile}
+  \small Classer un avis en positif ou négatif. Un classifieur linéaire sur des sacs de mots,
+  entraîné en quelques secondes, sans GPU, atteint 0,92 de F1.
+  \end{block}
+\end{column}
+\begin{column}{0.48\textwidth}
+  \begin{alertblock}{Ce qui est difficile}
+  \small Le rendre reproductible, testé, surveillé, utilisable par quelqu'un d'autre, et
+  redéployable après un réentraînement.
+  \end{alertblock}
+\end{column}
+\end{columns}
+\vspace{6pt}
+\centering\small
+Le modèle occupe 20 lignes de code sur les trois séances. Tout le reste, c'est le métier
+de ce module : \textbf{l'écart entre un notebook et un produit}.
+\end{frame}
+
+\begin{frame}{Les trois compétences visées}
+\begin{center}
+\begin{tabular}{@{}p{7.8cm}p{6.0cm}@{}}
+\toprule
+\textbf{Compétence} & \textbf{Vérifiée par} \\
+\midrule
+Choisir une approche technique et la justifier & 12 tests de cadrage, lecture des fiches \\
+Produire un modèle reproductible et l'évaluer correctement & 4 tests de modèle, \co{metrics.json} \\
+Exposer le modèle à un utilisateur non technique & 3 tests d'interface \\
+Travailler à deux sur un dépôt, avec tests et CI & 23 tests d'environnement, 3 d'historique \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{5pt}
+\centering\small Au total 45 tests, qui tournent encore à chaque push jusqu'en semaine 11.
+\end{frame}
+
+% =====================================================================
+\section{Les trois séances}
+% =====================================================================
+
+\begin{frame}{TP1 : cadrer et préparer l'environnement}
+\objectif{Décider quelle approche employer pour trois besoins métier, et monter un dépôt que
+l'enseignant peut cloner et faire tourner en trois commandes.}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\textbf{Partie A, 50 min}
+\begin{itemize}\small
+  \item Trois fiches de cadrage
+  \item Grille : (a) données étiquetées, (b) vérifiabilité, (c) coût, (d) conséquence d'une erreur
+  \item Arbre : règles, ML, RAG, génératif
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+\textbf{Partie B, 70 min}
+\begin{itemize}\small
+  \item Environnement virtuel
+  \item Dépôt GitHub privé, un commit par membre
+  \item 38 tests, intégration continue verte
+\end{itemize}
+\end{column}
+\end{columns}
+\vspace{5pt}
+\centering\small
+Aucune ligne de code métier n'est écrite. C'est la seule séance qui ne produit rien de visible,
+et celle sans laquelle les deux autres ne tiendraient pas.
+\end{frame}
+
+\begin{frame}{TP2 : entraîner, évaluer, sauvegarder}
+\objectif{Produire un modèle reproductible, évalué correctement, sauvegardé dans un fichier que
+l'interface chargera. Pas un bon modèle : un modèle dont on sait pourquoi il se trompe.}
+\begin{center}\scriptsize
+\begin{tabular}{@{}p{3.0cm}p{5.4cm}p{5.6cm}@{}}
+\toprule
+\textbf{Script} & \textbf{Ce qu'il fait} & \textbf{Ce qu'il produit} \\
+\midrule
+\co{src/make_demo.py} & 290 avis déterministes, dont 100 mitigés & \co{data/demo_reviews.csv} \\
+\co{src/train.py} & Découpe, entraîne un pipeline TF-IDF et régression logistique & \co{sentiment.joblib}, \co{metrics.json} \\
+\co{src/evaluate.py} & Matrice de confusion, rapport, trois erreurs commentées & une lecture, pas un fichier \\
+\co{src/predict.py} & La fonction \co{predict()} appelée par l'interface et, plus tard, par l'API & l'interface publique du modèle \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{3pt}
+\centering\small Résultats de référence : F1 macro 0,879 sur le jeu de démonstration, 0,920 sur Allociné.
+\end{frame}
+
+\begin{frame}{TP3 : l'interface de démonstration}
+\objectif{Rendre le modèle utilisable par quelqu'un qui n'ouvrira jamais un terminal,
+sans réécrire une ligne de logique de prédiction.}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{block}{Deux fichiers, deux rôles}
+\small
+\co{ui/helpers.py} : les fonctions pures, testables sans Streamlit.\\[3pt]
+\co{ui/app.py} : l'affichage, et rien d'autre.
+\end{block}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{block}{Trois onglets}
+\small
+Un avis saisi à la main.\\[2pt]
+Un fichier CSV traité en lot.\\[2pt]
+Une page « comment ça marche ».
+\end{block}
+\end{column}
+\end{columns}
+\vspace{5pt}
+\centering\small
+La question de conception de la séance : \textbf{que montrer quand le modèle hésite ?}
+En dessous de 60 \% de confiance, l'interface affiche « à vérifier » au lieu de trancher.
+\end{frame}
+
+% =====================================================================
+\section{Les ressources partagées}
+% =====================================================================
+
+\begin{frame}{Trois kits qui s'empilent}
+\begin{center}\scriptsize
+\begin{tabular}{@{}p{4.4cm}p{5.6cm}p{4.0cm}@{}}
+\toprule
+\textbf{Archive} & \textbf{Contenu} & \textbf{Se pose sur} \\
+\midrule
+\co{sentiment-app.zip} & Le dépôt de départ : structure, scripts, 38 tests, CI, documentation & rien, c'est la base \\
+\co{tp2-semaine2-kit.zip} & \co{src/} (quatre scripts), \co{tests/test_model.py}, notebook Colab & le dépôt du TP1 \\
+\co{tp3-streamlit-kit.zip} & \co{ui/} (interface et helpers), \co{tests/test_ui.py}, notebook Colab, compte rendu & le dépôt après TP2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{4pt}
+\begin{block}{Installation d'un kit, en une commande}
+\small Décompressez \textbf{à côté} du dépôt, pas dedans, puis :
+\co{python appliquer_tp2.py ../sentiment-app}. L'option \co{--simulation} montre ce qui serait
+copié sans rien écrire. Aucun kit n'écrase le travail du précédent.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ce que contient le kit du TP1}
+\begin{center}\scriptsize
+\begin{tabular}{@{}p{4.4cm}p{9.6cm}@{}}
+\toprule
+\textbf{Élément} & \textbf{Rôle} \\
+\midrule
+\co{README}, \co{MARCHE-A-SUIVRE}, \co{TESTS} & Porte d'entrée, pas à pas, démarche de test \\
+\co{AIDE-GIT}, \co{DEPANNAGE} & Commandes Git et messages d'erreur \\
+\co{requirements.txt} & Dépendances de tout le semestre, versions figées \\
+\co{.gitignore}, \co{.env.example}, \co{pytest.ini}, \co{.vscode/} & Configuration, à garder telle quelle \\
+\co{docs/cadrage/} & Trois fiches à remplir, un exemple corrigé, la grille, douze cas de rechange \\
+\co{scripts/} & Installation, diagnostic, initialisation du dépôt, clone de vérification \\
+\co{tests/} & 38 tests : environnement (23), cadrage (12), historique Git (3) \\
+\co{.github/workflows/ci.yml} & Intégration continue \\
+\co{exemples/}, \co{notebooks/} & Facultatif : aperçu des semaines suivantes, variante Colab \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}{L'entrepôt complet}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.52\textwidth}
+\footnotesize
+\textbf{Pour les étudiants}
+\begin{itemize}\scriptsize
+  \item Les trois kits, diffusés séance par séance
+  \item \co{tp1-tp2-tp3.md} et sa version PDF : la démarche complète
+  \item \co{ENONCE-COMPTE-RENDU.md} et son modèle à remplir
+  \item Les notebooks Colab
+\end{itemize}
+\vspace{4pt}
+\textbf{Pour l'enseignant seulement}
+\begin{itemize}\scriptsize
+  \item Les trois fiches de cadrage corrigées
+  \item Le QCM d'introduction, 40 questions
+  \item Le guide du TP1 : figures, scripts, problèmes
+\end{itemize}
+\end{column}
+\begin{column}{0.44\textwidth}
+\begin{block}{Calendrier de diffusion}
+\scriptsize
+\textbf{J-7} : prérequis (Python 3.11, Git, compte GitHub)\\[3pt]
+\textbf{J-2} : le kit de la séance\\[3pt]
+\textbf{Jour J} : les diapositives\\[3pt]
+\textbf{Après le TP3} : l'énoncé du compte rendu
+\end{block}
+\end{column}
+\end{columns}
+\end{frame}
+
+% =====================================================================
+\section{Streamlit}
+% =====================================================================
+
+\begin{frame}{Streamlit en trois idées}
+\small
+\begin{block}{1. Un script Python devient une page web}
+Pas de HTML, pas de JavaScript, pas de serveur à configurer. Chaque appel à \co{st.title},
+\co{st.text_area} ou \co{st.dataframe} ajoute un élément à la page.
+\end{block}
+\begin{block}{2. Chaque interaction réexécute le script de haut en bas}
+C'est le modèle de fonctionnement, et il surprend toujours. D'où le décorateur
+\co{@st.cache_resource} sur le chargement du modèle : sans lui, le fichier \co{joblib}
+serait relu à chaque clic.
+\end{block}
+\begin{alertblock}{3. Une démonstration, pas l'application}
+Elle sert à montrer le modèle, à récolter des retours, à faire apparaître les cas où il se trompe.
+C'est l'API, plus tard, qui sera appelée par d'autres programmes.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Pourquoi deux fichiers plutôt qu'un}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[style=tp, language=Python]
+# ui/helpers.py  : logique pure
+def classer(texte, predicteur):
+    r = predicteur(texte)
+    r["incertain"] = r["score"] < 0.60
+    r["verdict"] = ("à vérifier"
+        if r["incertain"] else r["label"])
+    return r
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[style=tp, language=Python]
+# ui/app.py  : affichage seul
+r = classer(texte, predire)
+if r["incertain"]:
+    st.warning("À vérifier par un agent")
+elif r["label"] == "negative":
+    st.error("Avis négatif : prioritaire")
+else:
+    st.success("Avis positif")
+\end{lstlisting}
+\end{column}
+\end{columns}
+\vspace{4pt}
+\centering\small
+Les trois tests du TP3 importent \co{helpers.py} \textbf{sans lancer Streamlit}.
+Une interface non testable est une interface qu'on casse sans s'en apercevoir.
+\end{frame}
+
+\begin{frame}[fragile]{Lancer l'interface, en local et sur Colab}
+\begin{lstlisting}[style=tp, language=bash]
+streamlit run ui/app.py        # local : le navigateur s'ouvre sur localhost:8501
+\end{lstlisting}
+\piege{Sur Colab, il faut un tunnel}{%
+\small Le serveur tourne sur la machine virtuelle de Colab, que votre navigateur ne peut pas joindre.
+Le notebook lance \co{localtunnel}, affiche un mot de passe (l'adresse IP publique de la machine)
+et une adresse \co{loca.lt} à ouvrir. Cette adresse est \textbf{publique et temporaire} :
+aucune donnée réelle ne doit y transiter.}
+\begin{lstlisting}[style=tp, language=bash]
+!streamlit run ui/app.py --server.headless true --server.port 8501 &>/content/log &
+!npx --yes localtunnel --port 8501
+\end{lstlisting}
+\centering\scriptsize Les tests, eux, tournent sans tunnel : ils n'ont besoin que de \co{helpers.py}.
+\end{frame}
+
+% =====================================================================
+\section{La démarche, pas à pas}
+% =====================================================================
+
+\begin{frame}{Les dix-sept contrôles, en un coup d'œil}
+\scriptsize
+\begin{tabular}{@{}p{0.7cm}p{6.2cm}p{6.8cm}@{}}
+\toprule
+ & \textbf{Commande} & \textbf{Résultat attendu} \\
+\midrule
+T0 & \co{ls} et \co{ls -a} & 7 dossiers, \co{.gitignore} présent \\
+T1 & \co{pytest -q} & 3 failed, 31 passed, 4 skipped \\
+T2 & \co{pytest tests/test_cadrage.py -q} & 12 passed \\
+T3 & \co{git status} avant le commit & aucune ligne \co{.venv/} \\
+T4 & \co{python scripts/check_setup.py} & 0 erreur(s) \\
+T5 & \co{git shortlog -sn --all} puis les tests Git & deux noms, 3 passed \\
+T6 & diagnostic et \co{pytest -q} & 0 erreur, 0 avertissement, 38 passed \\
+T7 & la suite sur un clone frais & 38 passed sans intervention \\
+C1 & \co{pytest -q} après le kit TP2 & 2 failed, 38 passed, 2 skipped \\
+C2 & \co{python src/make_demo.py} & 290 avis, 145 de chaque classe \\
+C3 & \co{python src/train.py} & F1 macro 0,879 \\
+C4 & \co{python src/evaluate.py} & 7 erreurs sur 58, toutes mitigées \\
+C5 & \co{train.py --allocine} puis \co{pytest -q} & F1 0,920 ; 42 passed ; CI verte \\
+S1 & \co{streamlit run ui/app.py} & la page s'ouvre, trois onglets \\
+S2 & un avis mitigé & verdict « à vérifier » sous 60 \% \\
+S3 & un CSV dans l'onglet 2 & métriques, graphique, tableau trié, export \\
+S4 & \co{pytest -q} & 45 passed, CI verte \\
+\bottomrule
+\end{tabular}
+\end{frame}
+
+\begin{frame}[fragile]{TP1, étapes 1 et 2 : le kit et le venv}
+\begin{lstlisting}[style=tp, language=bash]
+unzip sentiment-app.zip ; cd sentiment-app
+ls ; ls -Force | findstr gitignore          # T0
+
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1                # Linux, macOS : source .venv/bin/activate
+python -m pip install pandas scikit-learn pytest
+python -m pytest -q                         # T1
+\end{lstlisting}
+\piege{T1 doit être ROUGE : 3 failed, 31 passed, 4 skipped}{%
+\small Les 3 échecs sont les fiches vides, les 4 ignorés attendent le dépôt Git.
+Si vous obtenez 38 passed ici, vous testez un autre dossier.\\[3pt]
+Un test rouge avant que le travail soit fait est un test utile ; un test vert dès le départ
+ne vérifie rien.}
+\end{frame}
+
+\begin{frame}[fragile]{TP1, étape 3 : les trois fiches de cadrage}
+\small Arbre de choix, dans l'ordre : logique connue et stable ? \textbf{règles métier}.
+Données étiquetées ? \textbf{machine learning}. Réponse à tirer de documents et à citer ? \textbf{RAG}.
+Sinon seulement, \textbf{génératif seul}.
+\begin{center}\scriptsize
+\begin{tabular}{@{}p{3.3cm}p{3.8cm}p{6.8cm}@{}}
+\toprule
+\textbf{Fiche} & \textbf{Le cas} & \textbf{Réponse attendue} \\
+\midrule
+\co{cas1-pharmacie.md} & Ordonnances incomplètes & Règles métier : (a) pas d'étiquettes, (b) explicabilité, (d) erreur grave \\
+\co{cas2-reglement.md} & Règlement intérieur & RAG : (b) citer l'article, (a) pas d'étiquettes, (c) volume faible \\
+\co{cas3-avis-negatifs.md} & Avis négatifs & ML : (a) étiquettes gratuites, (c) volume, (d) erreur peu grave \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{2pt}
+\begin{lstlisting}[style=tp, language=bash]
+python -m pytest tests\test_cadrage.py -q        # T2 : 12 passed
+\end{lstlisting}
+\centering\scriptsize Une seule case \co{- [x]} ; deux critères cités \textbf{par leur lettre} ; chaque rubrique remplie.
+\end{frame}
+
+\begin{frame}[fragile]{TP1, étapes 4 à 8 : le dépôt, les commits, le clone frais}
+\begin{lstlisting}[style=tp, language=bash]
+git init ; git add -A ; git status          # T3 : aucune ligne .venv/
+git commit -m "Semaine 1 : structure du depot et kit TP1"
+git branch -M main
+git remote add origin https://github.com/votre-compte/sentiment-app.git
+git push -u origin main                     # jeton d'accès personnel, pas le mot de passe
+
+powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
+python scripts\check_setup.py               # T4 : 0 erreur(s)
+
+git pull ; git add README.md ; git commit -m "..." ; git push
+git shortlog -sn --all                      # T5 : deux noms distincts
+python -m pytest -q                         # T6 : 38 passed, puis CI verte
+bash scripts/verif_clone.sh <url>           # T7 : 38 passed sur un clone frais
+\end{lstlisting}
+\centering\scriptsize T3 est le seul contrôle irréversible : \co{.venv/} commité, et le test reste rouge
+même après correction, car il lit tout l'historique.
+\end{frame}
+
+\begin{frame}[fragile]{TP2, étapes A à C : installer, générer, entraîner}
+\begin{lstlisting}[style=tp, language=bash]
+cd tp2-semaine2 && python appliquer_tp2.py ../sentiment-app
+cd ../sentiment-app && python -m pytest -q   # C1 : 2 failed, 38 passed, 2 skipped
+
+python src/make_demo.py                      # C2 : 290 avis, 145 de chaque classe
+python src/train.py                          # C3 : F1 macro 0.879
+git status --short                           # metrics.json OUI, sentiment.joblib NON
+\end{lstlisting}
+\begin{block}{Les trois lignes de code à lire}
+\small
+\textbf{Le découpage avant la vectorisation}, sinon le jeu de test fuite dans l'entraînement.\\[2pt]
+\textbf{Le \co{Pipeline}}, qui enferme vectoriseur et modèle dans un seul objet.\\[2pt]
+\textbf{\co{random_state=42}}, sans quoi deux exécutions donnent deux scores.
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{TP2, étape D : lire les erreurs}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.38\textwidth}
+\begin{lstlisting}[style=tp, language=bash]
+python src/evaluate.py
+\end{lstlisting}
+\scriptsize
+\begin{tabular}{@{}lrr@{}}
+\toprule
+vérité $\downarrow$ & nég. & pos. \\
+\midrule
+négatif & \textbf{27} & 2 \\
+positif & 5 & \textbf{24} \\
+\bottomrule
+\end{tabular}
+\vspace{3pt}
+
+7 erreurs sur 58.
+\end{column}
+\begin{column}{0.58\textwidth}
+\piege{Toutes les erreurs sont des avis mitigés}{%
+\scriptsize « Service impeccable et livraison en avance sur le papier, \textbf{sauf que ensuite}
+produit cassé à l'arrivée. »\\[4pt]
+Le modèle compte des mots positifs et négatifs, puis tranche. Il ne voit pas le retournement,
+parce qu'un sac de mots \textbf{n'a pas d'ordre}.}
+\end{column}
+\end{columns}
+\vspace{3pt}
+\centering\small C4 : la limite annoncée en cours devient mesurable. Elle s'écrit dans \co{docs/semaine2.md}.
+\end{frame}
+
+\begin{frame}[fragile]{TP2, étape E : le vrai jeu}
+\begin{lstlisting}[style=tp, language=bash]
+python src/train.py --allocine    # 20 000 avis publics, 7,6 Mo, quelques secondes
+python -m pytest -q               # C5 : 42 passed
+\end{lstlisting}
+\begin{center}\scriptsize
+\begin{tabular}{@{}lrr@{}}
+\toprule
+ & \textbf{Démonstration} & \textbf{Allociné} \\
+\midrule
+Avis & 290 & 20 000 \\
+Vocabulaire & 316 termes & 149 529 termes \\
+F1 macro & 0,879 & \textbf{0,920} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{3pt}
+\centering\small
+Le modèle n'a pas changé : ce sont les données. Et la mesure devient crédible, calculée sur
+4 000 avis au lieu de 58, où une erreur de plus déplaçait le score de deux points.
+\end{frame}
+
+\begin{frame}[fragile]{TP3, étapes A à D : l'interface}
+\begin{lstlisting}[style=tp, language=bash]
+cd tp3-streamlit && python appliquer_tp3.py ../sentiment-app
+cd ../sentiment-app && streamlit run ui/app.py       # S1 : localhost:8501
+\end{lstlisting}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{block}{S2, l'onglet « un avis »}
+\scriptsize Trois essais : un positif net, un négatif net, un mitigé.
+Le mitigé doit afficher \textbf{« à vérifier »}.\\[3pt]
+Faites varier \co{SEUIL_INCERTITUDE} de 0,50 à 0,75 et observez.
+\end{block}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{block}{S3, l'onglet « un fichier »}
+\scriptsize Téléversez \co{demo_reviews.csv}.
+Trois métriques, un graphique, un tableau trié négatifs en tête, un export.\\[3pt]
+L'écart avec le vrai étiquetage, ce sont les erreurs du TP2.
+\end{block}
+\end{column}
+\end{columns}
+\vspace{3pt}
+\begin{lstlisting}[style=tp, language=bash]
+python -m pytest -q        # S4 : 45 passed, puis CI verte
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Le seuil d'incertitude : un arbitrage, pas un réglage}
+\begin{center}\small
+\begin{tabular}{@{}ccc@{}}
+\toprule
+\textbf{Seuil} & \textbf{Avis envoyés à un agent} & \textbf{Risque} \\
+\midrule
+0,50 & peu & le modèle tranche seul des cas qu'il ne maîtrise pas \\
+0,60 & modéré & compromis retenu par défaut \\
+0,75 & beaucoup & la file humaine se remplit, l'automatisation perd son intérêt \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{6pt}
+\small
+Ce curseur ne se règle pas dans le code : il se décide avec l'équipe métier, et il découle
+directement de la fiche de cadrage du cas 3, qui disait qu'un avis mal classé se requalifie d'un clic.
+\vspace{4pt}
+\centering\small C'est la question que le compte rendu demande d'argumenter, chiffres à l'appui.
+\end{frame}
+
+% =====================================================================
+\section{CI et MLOps}
+% =====================================================================
+
+\begin{frame}{Trois artefacts, pas un}
+\begin{center}\small
+\begin{tabular}{@{}p{4.0cm}p{4.2cm}p{5.6cm}@{}}
+\toprule
+\textbf{Artefact} & \textbf{Dans Git ?} & \textbf{Pourquoi} \\
+\midrule
+Le code (\co{src/}, \co{ui/}, \co{tests/}) & Oui & C'est le travail \\
+L'environnement (\co{.venv/}) & Non & Reconstructible : \co{pip install -r} \\
+Les données (\co{demo_reviews.csv}) & Non & Reconstructible : \co{make_demo.py} \\
+Le modèle (\co{sentiment.joblib}) & Non & Reconstructible : \co{train.py} \\
+\textbf{La mesure} (\co{metrics.json}) & \textbf{Oui} & Elle, ne se reconstruit pas sans réentraîner \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{5pt}
+\centering\small
+Un logiciel classique versionne une chose : le code. Une application intelligente en versionne
+trois, et ce tableau est la règle qui décide, pour chacune, où elle vit.
+\end{frame}
+
+\begin{frame}[fragile]{Ce que fait l'intégration continue}
+\begin{lstlisting}[style=tp, language=bash]
+on: [push, pull_request]
+  - uses: actions/checkout@v4
+    with: { fetch-depth: 0 }        # tout l'historique : sinon un seul auteur vu
+  - uses: actions/setup-python@v5
+    with: { python-version: "3.11" }
+  - run: python -m venv .venv && . .venv/bin/activate && pip install pandas scikit-learn pytest
+  - run: . .venv/bin/activate && python scripts/check_setup.py
+  - run: . .venv/bin/activate && pytest -q
+\end{lstlisting}
+\small
+À chaque push, sur une machine neuve, en Python 3.11 : l'environnement est reconstruit,
+le diagnostic passe, les tests tournent. Une CI verte veut dire que le dépôt fonctionne
+\textbf{ailleurs que sur vos deux portables}.
+\end{frame}
+
+\begin{frame}{Le geste MLOps de la séquence}
+\begin{alertblock}{La CI n'a jamais votre modèle}
+\small \co{models/sentiment.joblib} n'est pas dans le dépôt. Pourtant, l'intégration continue
+vérifie qu'un modèle acceptable a été produit.
+\end{alertblock}
+\vspace{3pt}
+\begin{center}\small
+\begin{tabular}{@{}p{6.4cm}p{7.4cm}@{}}
+\toprule
+\textbf{Les 4 tests du modèle} & \textbf{En CI} \\
+\midrule
+Deux tests lisent \co{metrics.json} & Ils passent : le fichier est versionné \\
+Deux tests appellent \co{predict()} & Ils sont ignorés : le modèle est absent \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{4pt}
+\small
+On transporte la \textbf{preuve} de la qualité, pas l'artefact lourd. C'est le principe que
+MLflow et DVC industrialiseront en semaine 7, et la porte de validation qui déclenchera
+le réentraînement en semaine 9.
+\end{frame}
+
+\begin{frame}{DevOps, MLOps : où passe la frontière}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{block}{DevOps, dans ces trois TP}
+\small
+Environnement reproductible, tests automatisés, versionnage à plusieurs, intégration continue.\\[4pt]
+Applicable à n'importe quelle application, intelligente ou non.
+\end{block}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{block}{MLOps, ce qui s'y ajoute}
+\small
+Trois artefacts au lieu d'un. Une validation qui compare une performance à un seuil,
+au lieu de passer ou d'échouer. Une dégradation possible \textbf{sans qu'on ait rien modifié}.
+\end{block}
+\end{column}
+\end{columns}
+\vspace{6pt}
+\centering\small
+Un test unitaire passe ou échoue. Un modèle a un F1 à comparer à un seuil, sur un jeu de test figé :
+c'est pour cela que \co{metrics.json} existe, et que le seuil y est inscrit à côté de la mesure.
+\end{frame}
+
+\begin{frame}{Ce qu'il reste à faire, et le compte rendu}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{block}{La suite du semestre}
+\small
+S3 l'API, S4 la qualité du code, S6 à S8 le paquet, Docker et la CI/CD complète,
+S7 MLflow et DVC, S9 la dérive et le réentraînement, S10 les agents.
+\end{block}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{block}{Le compte rendu global}
+\small
+Huit sections, quatre à six pages, dans \co{docs/compte-rendu.md}, figé par une étiquette Git.
+Noté sur 20.\\[3pt]
+Vos chiffres, un exemple d'erreur tiré de vos données, et les échecs réels de vos séances.
+\end{block}
+\end{column}
+\end{columns}
+\vfill
+\centering\small
+Rien de ce que vous avez fait en trois séances ne sera jeté : le dépôt d'aujourd'hui
+est celui de la semaine 11.
+\end{frame}
+
+\end{document}

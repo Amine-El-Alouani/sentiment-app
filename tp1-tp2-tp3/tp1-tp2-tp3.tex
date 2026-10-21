@@ -1,0 +1,506 @@
+% =====================================================================
+%  Du cadrage à l'interface : la démarche complète, TP1, TP2, TP3
+%  Module : Développement et déploiement d'applications intelligentes
+%  A. Larhlimi
+%  Compilation : pdflatex tp1-tp2-tp3.tex   (deux fois)
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}
+\usepackage[margin=2cm]{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{etoolbox}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{}
+\IfFileExists{hyphenat.sty}{\usepackage[htt]{hyphenat}}{}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{navy}{HTML}{1B2A41}
+\definecolor{orangeacc}{HTML}{E07A2F}
+\definecolor{teal}{HTML}{2A9D8F}
+\definecolor{grisclair}{HTML}{F0EDE5}
+\definecolor{grismoyen}{HTML}{5B6572}
+
+\newcommand{\co}[1]{\texttt{\detokenize{#1}}}
+
+\lstdefinestyle{tp}{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{grisclair},
+  frame=leftline, framerule=1.2pt, rulecolor=\color{teal},
+  xleftmargin=8pt, framexleftmargin=8pt,
+  breaklines=true, showstringspaces=false,
+  commentstyle=\color{grismoyen}\itshape,
+  keywordstyle=\color{navy}\bfseries,
+  extendedchars=true,
+  literate={é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {à}{{\`a}}1 {â}{{\^a}}1
+           {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1 {û}{{\^u}}1 {ù}{{\`u}}1
+           {ç}{{\c c}}1 {É}{{\'E}}1 {À}{{\`A}}1 {Ô}{{\^O}}1 {È}{{\`E}}1
+           {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1 {·}{{\textperiodcentered}}1
+           {├}{{\textbar}}1 {└}{{\textbar}}1 {│}{{\textbar}}1 {─}{{-}}1 {’}{{'}}1
+}
+\lstset{style=tp}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small TP1, TP2, TP3 \textperiodcentered{} Du cadrage à l'interface}
+\fancyhead[R]{\small A. Larhlimi}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\setlist[itemize]{topsep=2pt,itemsep=1pt,leftmargin=*}
+\setlist[enumerate]{topsep=2pt,itemsep=1pt,leftmargin=*}
+\renewcommand{\arraystretch}{1.25}
+\AtBeginEnvironment{longtable}{\small}
+\setlength{\tabcolsep}{4pt}
+\setlength{\emergencystretch}{3em}
+\sloppy
+
+\title{\vspace{-1.2cm}\textbf{Du cadrage à l'interface\\ La démarche complète : TP1, TP2, TP3}}
+\author{A. Larhlimi}
+\date{Développement et déploiement d'applications intelligentes\\
+Trois séances de 2 h \textperiodcentered{} travail en binôme \textperiodcentered{} \today}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\tableofcontents
+\bigskip
+
+\section{Du cadrage à l'interface : la démarche complète, TP1, TP2, TP3}
+
+\textbf{Module :} Développement et déploiement d'applications intelligentes
+\textbf{Auteur :} A. Larhlimi
+\textbf{Public :} binômes d'étudiants · \textbf{Durée totale :} trois séances de 2 h
+
+Ce document enchaîne les trois premières séances sur un seul et même dépôt. À la fin, vous avez une application de sentiment complète : un modèle entraîné, testé, et une interface qu'une personne non technique peut utiliser.
+
+\par\noindent\rule{\textwidth}{0.4pt}
+
+\subsection{Vue d'ensemble}
+
+\begin{longtable}{@{}p{3.4cm}p{4.2cm}p{4.2cm}p{4.6cm}@{}}
+\toprule
+\textbf{Séance} & \textbf{Ce que vous produisez} & \textbf{Contrôles} & \textbf{Tests cumulés} \\
+\midrule\endhead
+TP1 & Dépôt structuré, environnement reproductible, trois fiches de cadrage & T0 à T7 & 38 \\
+TP2 & Le modèle : entraînement, évaluation, métriques versionnées & C1 à C5 & 42 \\
+TP3 & L'interface de démonstration Streamlit & S1 à S4 & 45 \\
+\bottomrule
+\end{longtable}
+
+
+Un seul dépôt, \co{sentiment-app}, du premier jour au dernier. Chaque kit se pose sur le précédent sans rien écraser.
+
+\subsubsection{Le fil rouge}
+
+Une équipe relation client reçoit des milliers d'avis par jour et les traite dans l'ordre d'arrivée. On veut faire remonter les avis négatifs en tête de file. Problème volontairement simple côté modèle, pour que la difficulté soit là où elle est vraiment : la reproductibilité, les tests, le passage à l'utilisateur.
+
+\subsubsection{Les trois kits}
+
+\begin{longtable}{@{}p{4.6cm}p{5.4cm}p{6.5cm}@{}}
+\toprule
+\textbf{Kit} & \textbf{Contenu} & \textbf{Se pose sur} \\
+\midrule\endhead
+\co{sentiment-app.zip} & Le dépôt de départ complet : structure, scripts, 38 tests, CI & rien, c'est la base \\
+\co{tp2-semaine2-kit.zip} & \co{src/} (quatre scripts), \co{tests/test_model.py} & le dépôt du TP1 \\
+\co{tp3-streamlit-kit.zip} & \co{ui/} (interface et helpers), \co{tests/test_ui.py} & le dépôt après TP2 \\
+\bottomrule
+\end{longtable}
+
+
+Les deux derniers s'installent par un script : \co{python appliquer_tp2.py ../sentiment-app}.
+
+\par\noindent\rule{\textwidth}{0.4pt}
+
+\subsection{Avant la première séance}
+
+Sur chaque poste : \textbf{Python 3.11} (3.10 toléré, évitez 3.12 et 3.13), \textbf{Git}, un éditeur, un \textbf{compte GitHub}.
+
+\begin{lstlisting}
+python --version                    # 3.11.x attendu ; sinon py -3.11 --version
+git --version
+
+git config --global user.name "Prénom Nom"        # compté par le contrôle T5
+git config --global user.email "prenom.nom@ecole.ma"
+git config --global init.defaultBranch main
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned   # autorise l'activation du venv
+\end{lstlisting}
+
+Répartissez les rôles : le \textbf{membre A} crée le dépôt et pousse le kit ; le \textbf{membre B} clone. Tout le reste se fait à deux.
+
+\par\noindent\rule{\textwidth}{0.4pt}
+
+\section{TP1 : cadrer et préparer l'environnement}
+
+\begin{quote}\itshape \textbf{Objectif :} décider quelle approche technique employer pour trois besoins métier, et monter un dépôt que l'enseignant peut cloner et faire tourner en trois commandes.\end{quote}
+
+\subsection{Étape 1. Décompresser le kit (5 min, chacun)}
+
+\begin{lstlisting}
+unzip sentiment-app.zip        # Windows : clic droit, Extraire tout
+cd sentiment-app               # toutes les commandes partent d'ici
+ls ; ls -Force | findstr gitignore
+\end{lstlisting}
+
+\textbf{Contrôle T0 :} les sept dossiers (\co{app}, \co{data}, \co{docs}, \co{models}, \co{scripts}, \co{tests}, \co{ui}), les documents, et \co{.gitignore}, qui ne s'affiche pas avec un \co{ls} ordinaire. C'est le seul rempart contre l'erreur de T3.
+
+\subsection{Étape 2. L'environnement virtuel (10 min, chacun)}
+
+\begin{lstlisting}
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1          # Linux, macOS : source .venv/bin/activate
+python -m pip install pandas scikit-learn pytest
+python -m pytest -q
+\end{lstlisting}
+
+\textbf{Contrôle T1 : \co{3 failed, 31 passed, 4 skipped}.} Ce rouge est voulu : les trois échecs sont les fiches vides, les quatre tests ignorés attendent le dépôt Git. Si vous obtenez \co{38 passed} ici, vous testez un autre dossier.
+
+Votre invite doit afficher \co{(.venv)}. L'activation ne vaut que pour la fenêtre courante.
+
+\subsection{Étape 3. Les trois fiches de cadrage (50 min, à deux)}
+
+Lisez d'abord \co{docs/cadrage/EXEMPLE-corrige.md}. La grille a quatre critères : (a) données étiquetées, (b) vérifiabilité, (c) coût par requête, (d) conséquence d'une erreur.
+
+L'arbre de choix, dans l'ordre : logique connue et stable ? \textbf{règles métier}. Données étiquetées ? \textbf{machine learning}. Réponse à tirer de documents et à citer ? \textbf{RAG}. Sinon seulement, \textbf{génératif seul}.
+
+\begin{longtable}{@{}p{4.6cm}p{5.4cm}p{6.5cm}@{}}
+\toprule
+\textbf{Fiche} & \textbf{Le cas} & \textbf{Réponse attendue} \\
+\midrule\endhead
+\co{cas1-pharmacie.md} & Détecter les ordonnances incomplètes & Règles métier : (a) pas d'étiquettes, (b) explicabilité, (d) erreur grave \\
+\co{cas2-reglement.md} & Répondre sur le règlement intérieur & RAG : (b) citer l'article, (a) pas d'étiquettes, (c) volume faible \\
+\co{cas3-avis-negatifs.md} & Prioriser les avis négatifs & Machine learning : (a) étiquettes gratuites, (c) volume, (d) erreur peu grave \\
+\bottomrule
+\end{longtable}
+
+
+Trois règles vérifiées par les tests : une seule case \co{- [x]} par fiche ; au moins deux critères cités \textbf{par leur lettre} ; chaque rubrique obligatoire d'au moins une phrase.
+
+\begin{lstlisting}
+python -m pytest tests\test_cadrage.py -q
+\end{lstlisting}
+
+\textbf{Contrôle T2 : \co{12 passed}.} Les messages d'échec nomment la fiche et la rubrique fautives.
+
+\subsection{Étape 4. Le dépôt GitHub (25 min, membre A)}
+
+Sur github.com : New repository, nom \co{sentiment-app}, \textbf{Private}, aucune case cochée. Settings, Collaborators : membre B en \textbf{Write}, enseignant en \textbf{Read}.
+
+\begin{lstlisting}
+git init
+git add -A
+git status
+\end{lstlisting}
+
+\textbf{Contrôle T3 : aucune ligne \co{.venv/} dans la sortie.} Si elle apparaît, arrêtez-vous : le \co{.gitignore} manque. Une fois poussé, le dépôt pèse 300 Mo et le test reste rouge même après correction, car il lit tout l'historique.
+
+\begin{lstlisting}
+git commit -m "Semaine 1 : structure du depot et kit TP1"
+git branch -M main
+git remote add origin https://github.com/votre-compte/sentiment-app.git
+git remote -v                      # vérifiez : pas de chevrons dans l'URL
+git push -u origin main
+\end{lstlisting}
+
+Au premier push, le mot de passe du compte est refusé : il faut un \textbf{jeton d'accès personnel} (Settings, Developer settings, Personal access tokens, portée \co{repo}). Raccourci : \co{bash scripts/init_depot.sh <url>}, qui refuse de pousser si \co{.venv/} est en attente.
+
+\subsection{Étape 5. L'installation complète (15 min, les deux)}
+
+Le membre B accepte l'invitation reçue par courriel, puis clone.
+
+\begin{lstlisting}
+git clone https://github.com/votre-compte/sentiment-app.git
+cd sentiment-app
+powershell -ExecutionPolicy Bypass -File scripts\setup.ps1   # Linux, macOS : bash scripts/setup.sh
+python scripts\check_setup.py
+\end{lstlisting}
+
+\textbf{Contrôle T4 : \co{0 erreur(s)}.} Comptez 5 à 10 minutes : \co{requirements.txt} installe tout le semestre. L'avertissement « 1 auteur seulement » est normal ici.
+
+\co{requirements.lock} est régénéré sur chaque poste : \textbf{un seul membre le commite}.
+
+\subsection{Étape 6. Un commit par membre (10 min, chacun)}
+
+\begin{lstlisting}
+git pull
+# ajoutez votre ligne au tableau du binôme dans README.md
+git add README.md
+git commit -m "README : ajout de <nom> au tableau du binome"
+git push
+git shortlog -sn --all
+python -m pytest tests\test_git_history.py -q
+\end{lstlisting}
+
+\textbf{Contrôle T5 : deux noms distincts, puis \co{3 passed}.} Si le test ne voit qu'un auteur, les deux postes partagent le même \co{user.name}.
+
+\subsection{Étape 7 et 8. Vérification et clone frais (15 min)}
+
+\begin{lstlisting}
+git pull
+python scripts\check_setup.py      # T6 : 0 erreur, 0 avertissement
+python -m pytest -q                # T6 : 38 passed
+\end{lstlisting}
+
+Puis l'onglet \textbf{Actions} doit être vert. Enfin, le test de l'enseignant :
+
+\begin{lstlisting}
+bash scripts/verif_clone.sh https://github.com/votre-compte/sentiment-app.git
+\end{lstlisting}
+
+\textbf{Contrôle T7 : \co{0 erreur(s)} et \co{38 passed} sur un clone frais, sans aucune intervention manuelle.}
+
+\par\noindent\rule{\textwidth}{0.4pt}
+
+\section{TP2 : entraîner, évaluer, sauvegarder le modèle}
+
+\begin{quote}\itshape \textbf{Objectif :} produire un modèle reproductible, évalué correctement, et sauvegardé dans un fichier que l'interface du TP3 pourra charger. Pas un bon modèle : un modèle dont vous savez pourquoi il se trompe.\end{quote}
+
+\subsection{Étape A. Installer le kit (15 min)}
+
+Décompressez \co{tp2-semaine2-kit.zip} \textbf{à côté} du dépôt, pas dedans.
+
+\begin{lstlisting}
+cd tp2-semaine2
+python appliquer_tp2.py ../sentiment-app --simulation
+python appliquer_tp2.py ../sentiment-app
+cd ../sentiment-app && source .venv/bin/activate
+python -m pytest -q
+\end{lstlisting}
+
+\textbf{Contrôle C1 : \co{2 failed, 38 passed, 2 skipped}.} Les 38 verts sont ceux du TP1. Les 2 échecs réclament \co{models/metrics.json}, les 2 ignorés attendent le modèle.
+
+\subsection{Étape B. Le jeu de démonstration (15 min)}
+
+\begin{lstlisting}
+python src/make_demo.py
+\end{lstlisting}
+
+\textbf{Contrôle C2 : 290 avis, 145 de chaque classe.} Le fichier contient 80 avis nettement positifs, 80 nettement négatifs, 100 \textbf{mitigés} et 30 neutres.
+
+Lisez trois avis mitigés : une première moitié d'un sentiment, un retournement (« mais finalement »), une seconde moitié de l'autre. L'étiquette suit la seconde, celle qui conclut. Cette structure explique toutes les erreurs de l'étape D.
+
+\subsection{Étape C. Entraîner (25 min)}
+
+\begin{lstlisting}
+python src/train.py
+\end{lstlisting}
+
+\textbf{Contrôle C3 : F1 macro 0,879}, et deux fichiers produits.
+
+\begin{lstlisting}
+Source : demo, 290 avis (145 négatifs)
+232 avis d'entraînement, 58 de test
+Vocabulaire : 316 termes
+F1 macro sur le jeu de test : 0.879 (seuil 0.85)
+\end{lstlisting}
+
+\begin{lstlisting}
+git status --short
+\end{lstlisting}
+
+\co{models/metrics.json} apparaît, \co{models/sentiment.joblib} non, \co{data/demo_reviews.csv} non plus. \textbf{Ce qui se régénère par une commande n'entre pas dans Git ; seule la mesure est versionnée.}
+
+Trois lignes de code à lire avant de continuer : le \co{train_test_split} \textbf{avant} toute vectorisation (sinon le jeu de test fuite dans l'entraînement), le \co{Pipeline} qui enferme vectoriseur et modèle dans un seul objet, et \co{random_state=42} qui rend le découpage reproductible.
+
+\subsection{Étape D. Évaluer et comprendre (30 min)}
+
+\begin{lstlisting}
+python src/evaluate.py
+\end{lstlisting}
+
+\textbf{Contrôle C4 : 7 erreurs sur 58.}
+
+\begin{lstlisting}
+            negative  positive
+  negative        27         2
+  positive         5        24
+\end{lstlisting}
+
+Les deux faux positifs sont le cas qui compte : un client mécontent traité en retard. Toutes les erreurs portent sur des avis mitigés : le modèle compte des mots positifs et négatifs puis tranche, mais ne voit pas le retournement, parce qu'un sac de mots \textbf{n'a pas d'ordre}.
+
+Écrivez \co{docs/semaine2.md}, trois phrases : quelles erreurs, pourquoi, et ce qu'il faudrait pour les corriger.
+
+\subsection{Étape E. Le vrai jeu et les tests (35 min)}
+
+\begin{lstlisting}
+python src/train.py --allocine     # 20 000 avis publics, 7,6 Mo
+python -m pytest -q
+git add -A && git commit -m "Semaine 2 : modele de sentiment, metriques et tests" && git push
+\end{lstlisting}
+
+\textbf{Contrôle C5 : F1 macro 0,920, puis \co{42 passed}, puis CI verte.}
+
+\begin{longtable}{@{}p{4.6cm}p{5.4cm}p{6.5cm}@{}}
+\toprule
+\textbf{} & \textbf{Démonstration} & \textbf{Allociné} \\
+\midrule\endhead
+Avis & 290 & 20 000 \\
+Vocabulaire & 316 termes & 149 529 termes \\
+F1 macro & 0,879 & 0,920 \\
+\bottomrule
+\end{longtable}
+
+
+Le modèle n'a pas changé : ce sont les données, et la mesure devient enfin crédible, calculée sur 4 000 avis au lieu de 58.
+
+La CI exécute les 42 tests sans jamais avoir le modèle : les deux tests de prédiction sont ignorés, les deux tests de qualité lisent \co{metrics.json}, qui est versionné. Votre intégration continue vérifie qu'un modèle acceptable a été produit, \textbf{sans transporter le modèle}.
+
+\par\noindent\rule{\textwidth}{0.4pt}
+
+\section{TP3 : l'interface de démonstration}
+
+\begin{quote}\itshape \textbf{Objectif :} rendre le modèle utilisable par quelqu'un qui n'ouvrira jamais un terminal, sans réécrire une ligne de logique de prédiction.\end{quote}
+
+\subsection{Étape A. Installer et lancer (15 min)}
+
+\begin{lstlisting}
+cd tp3-streamlit
+python appliquer_tp3.py ../sentiment-app
+cd ../sentiment-app && source .venv/bin/activate
+streamlit run ui/app.py
+\end{lstlisting}
+
+\textbf{Contrôle S1 :} le navigateur s'ouvre sur \co{http://localhost:8501}, trois onglets s'affichent. Si le modèle manque, la page le dit et s'arrête : lancez \co{python src/train.py --allocine}.
+
+Ce terminal reste occupé tant que l'interface tourne. Ouvrez-en un second pour la suite, et arrêtez avec \co{Ctrl+C}.
+
+\subsection{Étape B. L'onglet « un avis » (30 min)}
+
+Saisissez un avis clairement positif, un clairement négatif, puis un mitigé : « service impeccable au début, mais finalement produit cassé ».
+
+\textbf{Contrôle S2 : l'avis mitigé affiche « à vérifier »}, pas un verdict tranché, dès que la confiance tombe sous 60 \%.
+
+Le seuil est dans \co{ui/helpers.py}, constante \co{SEUIL_INCERTITUDE}. Faites-le varier à 0,50 puis 0,75 : plus il est haut, plus le modèle renvoie de cas à un agent, et moins il se trompe tout seul. C'est un arbitrage métier, pas un réglage technique, et il découle directement de la fiche de cadrage du cas 3.
+
+\subsection{Étape C. L'onglet « un fichier CSV » (40 min)}
+
+Téléversez \co{data/sample_reviews.csv}, puis \co{data/demo_reviews.csv}.
+
+\textbf{Contrôle S3 :} trois métriques (avis analysés, négatifs détectés et leur pourcentage, cas à vérifier), un graphique de répartition, un tableau trié négatifs en tête, et un bouton de téléchargement.
+
+Comparez la part de négatifs annoncée avec le vrai étiquetage du fichier de démonstration : l'écart, ce sont les erreurs mesurées au TP2.
+
+\subsection{Étape D. Tests, documentation, push (35 min)}
+
+\begin{lstlisting}
+python -m pytest tests/test_ui.py -q      # 3 passed
+python -m pytest -q                       # 45 passed
+git add -A && git commit -m "Semaine 3 : interface de demonstration Streamlit" && git push
+\end{lstlisting}
+
+\textbf{Contrôle S4 : \co{45 passed} et CI verte.}
+
+Les tests d'interface \textbf{ne lancent pas Streamlit} : ils importent \co{ui/helpers.py}. C'est pour cela que la logique est séparée de l'affichage, et c'est ce que vérifie \co{test_helpers_importables}. Une interface non testable est une interface qu'on casse sans s'en apercevoir.
+
+Écrivez \co{docs/semaine3.md}, trois phrases : quel seuil d'incertitude vous retenez, combien d'avis cela envoie à un agent, et pourquoi ce compromis vous paraît juste.
+
+\par\noindent\rule{\textwidth}{0.4pt}
+
+\subsection{Variante Google Colab}
+
+Les trois TP ont leur notebook, dans \co{notebooks/} : \co{TP1-colab.ipynb}, \co{TP2-colab.ipynb} et \co{TP3-colab-streamlit.ipynb}. Mêmes étapes, mêmes contrôles, avec trois différences.
+
+\textbf{Pas d'environnement virtuel.} Colab installe dans son Python système, donc \co{test_virtualenv_active} est écarté : les comptes deviennent 37, 41 et 44 au lieu de 38, 42 et 45.
+
+\textbf{Streamlit a besoin d'un tunnel.} Le serveur tourne sur la machine virtuelle de Colab, que votre navigateur ne peut pas joindre. Le notebook du TP3 lance \co{localtunnel}, affiche un mot de passe (l'adresse IP publique de la machine) et une adresse \co{loca.lt} à ouvrir. Cette adresse est publique et temporaire : n'y laissez jamais passer de données réelles.
+
+\textbf{Rien ne survit à la session.} \co{/content} disparaît à la fermeture. Poussez sur GitHub avant de partir. Le modèle, lui, n'a pas à être conservé : il se réentraîne par une commande.
+
+\par\noindent\rule{\textwidth}{0.4pt}
+
+\subsection{Le compte rendu global}
+
+À la fin des trois séances, chaque binôme rédige un compte rendu unique, déposé dans son dépôt à l'emplacement \co{docs/compte-rendu.md}, puis figé par une étiquette Git :
+
+\begin{lstlisting}
+cp docs/compte-rendu-TEMPLATE.md docs/compte-rendu.md
+# rédaction...
+git add docs/compte-rendu.md
+git commit -m "Compte rendu global des TP1 a TP3"
+git push
+git tag -a compte-rendu -m "Version remise le <date>" && git push origin compte-rendu
+\end{lstlisting}
+
+Huit sections, quatre à six pages, noté sur 20 : cadrage, architecture, modèle, analyse des erreurs, seuil d'incertitude, ce qui a échoué, ce que vous feriez autrement, répartition du travail. L'énoncé complet et la grille sont dans \co{ENONCE-COMPTE-RENDU.md}, le squelette à remplir dans \co{docs/compte-rendu-TEMPLATE.md}.
+
+Deux règles qui font la différence : citez \textbf{vos} chiffres, ceux de votre \co{models/metrics.json}, et tirez au moins un exemple d'erreur de vos propres données. Un compte rendu sans aucun échec mentionné n'est pas crédible.
+
+\par\noindent\rule{\textwidth}{0.4pt}
+
+\subsection{Récapitulatif des treize contrôles}
+
+\begin{longtable}{@{}p{4.6cm}p{5.4cm}p{6.5cm}@{}}
+\toprule
+\textbf{} & \textbf{Commande} & \textbf{Résultat attendu} \\
+\midrule\endhead
+T0 & \co{ls} et \co{ls -a} & 7 dossiers, \co{.gitignore} présent \\
+T1 & \co{pytest -q} & 3 failed, 31 passed, 4 skipped \\
+T2 & \co{pytest tests/test_cadrage.py -q} & 12 passed \\
+T3 & \co{git status} avant le commit & aucune ligne \co{.venv/} \\
+T4 & \co{python scripts/check_setup.py} & 0 erreur(s) \\
+T5 & \co{git shortlog -sn --all} puis \co{pytest tests/test_git_history.py} & deux noms, 3 passed \\
+T6 & \co{check_setup.py} et \co{pytest -q} & 0 erreur, 0 avertissement, 38 passed \\
+T7 & la suite sur un clone frais & 38 passed sans intervention \\
+C1 & \co{pytest -q} & 2 failed, 38 passed, 2 skipped \\
+C2 & \co{python src/make_demo.py} & 290 avis, 145 de chaque classe \\
+C3 & \co{python src/train.py} & F1 macro 0,879, \co{metrics.json} seul en attente \\
+C4 & \co{python src/evaluate.py} & 7 erreurs sur 58, toutes sur des avis mitigés \\
+C5 & \co{train.py --allocine} puis \co{pytest -q} & F1 0,920, 42 passed, CI verte \\
+S1 & \co{streamlit run ui/app.py} & la page s'ouvre, trois onglets \\
+S2 & un avis mitigé & verdict « à vérifier » sous 60 \% \\
+S3 & un CSV dans l'onglet 2 & métriques, graphique, tableau trié, export \\
+S4 & \co{pytest -q} & 45 passed, CI verte \\
+\bottomrule
+\end{longtable}
+
+
+\subsection{Les erreurs les plus coûteuses, tous TP confondus}
+
+\begin{longtable}{@{}p{4.6cm}p{5.4cm}p{6.5cm}@{}}
+\toprule
+\textbf{Message} & \textbf{Cause} & \textbf{Correction} \\
+\midrule\endhead
+\co{pytest n'est pas reconnu} & Venv non activé & Activer, ou \co{python -m pytest} \\
+\co{Activate.ps1 cannot be loaded} & Politique PowerShell & \co{Set-ExecutionPolicy -Scope CurrentUser RemoteSigned} \\
+\co{ModuleNotFoundError} & Venv non activé, ou installation partielle & \co{where python} doit contenir \co{.venv} \\
+\co{error: 400} sur l'URL & Chevrons restés dans l'adresse & \co{git remote set-url origin <vraie URL>} \\
+\co{Password authentication is not supported} & Authentification & Jeton d'accès personnel \\
+\co{403 Forbidden} & Autorisation & Accepter l'invitation de collaborateur \\
+\co{.venv/ a été commité} & \co{.gitignore} absent au premier \co{add} & Refaire le dépôt (voir \co{DEPANNAGE.md}) \\
+\co{models/metrics.json absent} & Étape C du TP2 sautée & \co{python src/train.py} \\
+\co{models/sentiment.joblib absent} & Modèle non entraîné sur ce poste & \co{python src/train.py --allocine} \\
+\co{Port 8501 is already in use} & Une interface tourne déjà & \co{Ctrl+C}, ou \co{--server.port 8502} \\
+\bottomrule
+\end{longtable}
+
+
+\subsection{La structure finale du dépôt}
+
+\begin{lstlisting}
+sentiment-app/
+├── README.md, TP1-ENONCE.md, MARCHE-A-SUIVRE.md, TESTS.md, AIDE-GIT.md, DEPANNAGE.md
+├── requirements.txt, requirements.lock, .gitignore, .env.example, pytest.ini, Makefile
+├── .github/workflows/ci.yml        intégration continue
+├── docs/
+│   ├── cadrage/cas1, cas2, cas3    TP1, remplies (livrable noté)
+│   ├── semaine2.md                 TP2, analyse des erreurs
+│   └── semaine3.md                 TP3, seuil d'incertitude
+├── src/      make_demo, train, evaluate, predict        (TP2)
+├── ui/       app.py, helpers.py                         (TP3)
+├── tests/    environment (23), cadrage (12), git (3), model (4), ui (3)
+├── scripts/  check_setup, setup, init_depot, verif_clone, new_cadrage
+├── models/   .gitkeep + metrics.json      le modèle lui-même n'est JAMAIS commité
+└── data/     sample_reviews.csv           demo_reviews.csv est régénérable
+\end{lstlisting}
+
+\textbf{45 tests} à l'arrivée. Trois artefacts restent hors de Git parce qu'ils se reconstruisent en une commande : le venv, le jeu de démonstration, le modèle. Une seule mesure est versionnée : \co{models/metrics.json}. C'est le principe qui portera tout le reste du semestre.
+
+\end{document}

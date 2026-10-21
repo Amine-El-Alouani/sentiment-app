@@ -1,0 +1,32 @@
+# Environnement Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+
+# Secrets
+.env
+
+# Artefacts lourds (DVC et MLflow à partir de la semaine 7)
+models/*
+!models/.gitkeep
+data/*
+!data/.gitkeep
+!data/sample_reviews.csv
+mlruns/
+mlflow.db
+
+# Éditeurs et système
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
