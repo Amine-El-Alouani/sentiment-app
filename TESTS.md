@@ -18,7 +18,7 @@ Les sept dossiers (`app`, `data`, `docs`, `models`, `scripts`, `tests`, `ui`), l
 ```bash
 python -m venv .venv
 source .venv/bin/activate          # Windows : .venv\Scripts\Activate.ps1
-pip install pandas scikit-learn pytest
+pip install -r requirements.txt -r requirements-dev.txt
 pytest -q
 ```
 

@@ -17,7 +17,7 @@ if [ ! -x "$VENV_PY" ]; then
 fi
 
 echo "3/4 Installation des dépendances"
-"$VENV_PY" -m pip install pandas scikit-learn pytest
+"$VENV_PY" -m pip install -r requirements.txt -r requirements-dev.txt
 
 echo "4/4 Diagnostic"
 "$VENV_PY" scripts/check_setup.py

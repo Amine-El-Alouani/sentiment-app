@@ -22,6 +22,7 @@ PY=$(command -v python3.11 || command -v python3 || command -v python)
 source .venv/bin/activate
 python -m pip install -q --upgrade pip
 pip install -q -r requirements.txt
+pip install -q -r requirements-dev.txt
 
 echo
 echo "=== Diagnostic ==="

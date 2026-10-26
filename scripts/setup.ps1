@@ -14,7 +14,7 @@ if (-not (Test-Path ".venv\Scripts\python.exe")) {
 $VenvPython = Join-Path $PWD ".venv\Scripts\python.exe"
 
 Write-Host "3/4 Installation des dépendances"
-& $VenvPython -m pip install pandas scikit-learn pytest
+& $VenvPython -m pip install -r requirements.txt -r requirements-dev.txt
 
 Write-Host "4/4 Diagnostic"
 & $VenvPython scripts\check_setup.py

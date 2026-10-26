@@ -13,7 +13,9 @@ SEUIL_INDETERMINE = 0.60
 
 @asynccontextmanager
 async def lifespan(application: FastAPI):
-    application.state.model = charger_modele()
+    modele = charger_modele()
+    application.state.model = modele
+    application.state.classifier = modele
     yield
 
 
@@ -24,6 +26,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 app.state.model = charger_modele()
+app.state.classifier = app.state.model
 
 
 class PredictionRequest(BaseModel):
@@ -44,7 +47,7 @@ def root() -> dict[str, str]:
 
 @app.get("/health")
 def health(request: Request) -> dict[str, str]:
-    if not hasattr(request.app.state, "model"):
+    if not _modele_disponible(request):
         raise HTTPException(status_code=503, detail="modèle non chargé")
     return {
         "status": "OK",
@@ -54,7 +57,7 @@ def health(request: Request) -> dict[str, str]:
 
 @app.post("/predict")
 def predict_sentiment(request: Request, prediction: PredictionRequest) -> dict[str, str | float]:
-    if not hasattr(request.app.state, "model"):
+    if not _modele_disponible(request):
         raise HTTPException(status_code=503, detail="modèle non chargé")
     try:
         model = request.app.state.model
@@ -69,3 +72,13 @@ def predict_sentiment(request: Request, prediction: PredictionRequest) -> dict[s
         "score": score,
         "text": prediction.text,
     }
+
+
+def _modele_disponible(request: Request) -> bool:
+    """Les deux noms d'état sont conservés pour les contrats TP3 et TP5."""
+    return (
+        hasattr(request.app.state, "model")
+        and hasattr(request.app.state, "classifier")
+        and request.app.state.model is not None
+        and request.app.state.classifier is not None
+    )
