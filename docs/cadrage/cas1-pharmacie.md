@@ -21,7 +21,7 @@ Cocher une seule case :
 
 ## Justification (obligatoire, citer au moins deux critères de la grille : (a) données étiquetées, (b) vérifiabilité, (c) coût par requête, (d) conséquence d'une erreur)
 
-Aucune base d'ordonnances étiquetées complètes ou incomplètes n'existe au départ, et en constituer une demanderait des mois. Le pharmacien doit pouvoir expliquer au patient quel champ manque : une règle se montre, un modèle statistique non. Une ordonnance validée à tort a une conséquence grave sur la santé, ce qui interdit une approche dont on ne peut pas justifier chaque décision.
+(a) Aucune base d'ordonnances étiquetées complètes ou incomplètes n'existe au départ, et en constituer une demanderait des mois. (b) Le pharmacien doit pouvoir expliquer au patient quel champ manque : une règle se montre, un modèle statistique non. (d) Une ordonnance validée à tort a une conséquence grave sur la santé, ce qui interdit une approche dont on ne peut pas justifier chaque décision.
 
 ## Données nécessaires et leur origine (obligatoire)
 

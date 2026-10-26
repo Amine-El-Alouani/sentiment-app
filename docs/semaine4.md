@@ -16,13 +16,29 @@
 
 ## 3. Seuil d'abstention
 
-- Deux ou trois points de la courbe (`python src/courbe_seuil.py`) : …
-- Seuil retenu : … ; part des avis envoyés à un humain : … ; justification : …
+- Trois textes de mots inventés reçoivent tous `NEGATIVE` à `0,5162` sans abstention :
+  sans mot connu, le vecteur TF-IDF est nul et il ne reste que l'ordonnée à l'origine.
+- Courbe (`python src/courbe_seuil.py`) :
+  - à `0,50` : 58 réponses, 100 % d'exactitude, 7 erreurs, 0 vers un humain ;
+  - à `0,60` : 42 réponses, 95,2 % d'exactitude, 2 erreurs, 16 vers un humain ;
+  - à `0,70` : 37 réponses, 100 % d'exactitude, 0 erreur, 21 vers un humain.
+- Seuil retenu : `0,60` ; 28 % des avis du jeu de test sont envoyés à un humain.
+  Ce seuil améliore nettement l'exactitude des réponses automatiques tout en conservant
+  la majorité des avis traités automatiquement.
+- Dans l'API, un score inférieur à `0,60` devient `INDETERMINE`, tandis que le score
+  original reste renvoyé. T24 : un texte inventé reçoit donc `INDETERMINE` avec un
+  score de `0,5162`.
 
 ## 4. Jeu d'or
 
-- Bilan (`python src/bilan_jeu_or.py`) : justes …, abstentions …, erreurs franches déclarées …
-- Ce que ces chiffres disent du modèle : …
+- Bilan (`python src/bilan_jeu_or.py`) sur 20 avis : 7 justes, 9 abstentions et
+  4 erreurs franches déclarées.
+- `python -m pytest -q tests/test_jeu_or.py` : 17 tests passés et 4 erreurs déclarées
+  en `xfail` ; aucun `failed`.
+- Le modèle évite ainsi de transformer les cas incertains en erreurs franches, mais
+  son seuil de `0,60` entraîne beaucoup d'abstentions sur ce petit jeu. Les erreurs
+  restantes concernent notamment la négation, les avis mitigés et le vocabulaire
+  ambigu ; elles sont conservées et documentées pour guider une amélioration future.
 
 ## 5. Outils statiques
 

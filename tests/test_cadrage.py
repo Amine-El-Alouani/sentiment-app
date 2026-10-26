@@ -48,7 +48,9 @@ def test_sections_are_filled(cadrage_dir: Path):
             body = section_body(text, title)
             # ignorer les lignes de consigne (citations) et les cases à cocher
             body = "\n".join(
-                l for l in body.splitlines() if l.strip() and not l.startswith(">") and not l.startswith("- [")
+                ligne
+                for ligne in body.splitlines()
+                if ligne.strip() and not ligne.startswith(">") and not ligne.startswith("- [")
             )
             if len(body) < 20:
                 empty.append(f"{fiche.name} / {title}")

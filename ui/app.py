@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
-
 from helpers import charger_predicteur, classer, predire_lot, resumer
 
 RACINE = Path(__file__).resolve().parents[1]

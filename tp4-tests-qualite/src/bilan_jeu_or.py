@@ -18,9 +18,8 @@ FRANCHES = {"POSITIVE", "NEGATIVE"}
 
 def main() -> int:
     sys.path.insert(0, str(RACINE))
-    from fastapi.testclient import TestClient
-
     from api.main import app
+    from fastapi.testclient import TestClient
 
     logging.disable(logging.INFO)  # pas de journal (API, httpx) dans le bilan
     with JEU_OR.open(encoding="utf-8", newline="") as f:

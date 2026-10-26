@@ -49,9 +49,8 @@ def test_jeu_or_complet():
 def client():
     if not MODELE.exists():
         pytest.skip("modèle non produit : python src/train.py")
-    from fastapi.testclient import TestClient
-
     from api.main import app
+    from fastapi.testclient import TestClient
 
     with TestClient(app) as c:
         yield c

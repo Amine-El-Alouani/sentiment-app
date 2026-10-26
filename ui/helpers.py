@@ -44,9 +44,9 @@ def predire_lot(df: pd.DataFrame, predicteur, colonne: str = "review") -> pd.Dat
     if not lignes:
         raise ValueError("aucun avis exploitable dans le fichier")
     sortie = df.loc[df[colonne].fillna("").astype(str).str.strip() != ""].copy()
-    sortie["prediction"] = [l["label"] for l in lignes]
-    sortie["confiance"] = [round(l["score"], 3) for l in lignes]
-    sortie["verdict"] = [l["verdict"] for l in lignes]
+    sortie["prediction"] = [ligne["label"] for ligne in lignes]
+    sortie["confiance"] = [round(ligne["score"], 3) for ligne in lignes]
+    sortie["verdict"] = [ligne["verdict"] for ligne in lignes]
     return sortie
 
 

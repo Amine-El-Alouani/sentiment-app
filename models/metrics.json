@@ -1,6 +1,6 @@
 {
   "source": "demo",
-  "date": "2026-10-21",
+  "date": "2026-10-26",
   "n_train": 232,
   "n_test": 58,
   "f1_macro": 0.879,

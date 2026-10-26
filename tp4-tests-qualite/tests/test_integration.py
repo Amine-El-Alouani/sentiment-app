@@ -13,9 +13,8 @@ pytestmark = pytest.mark.skipif(not MODELE.exists(), reason="modèle non produit
 
 def test_demarrage_reel_charge_le_modele():
     """D.1 (donné en exemple) : un client ouvert par « with » exécute le lifespan."""
-    from fastapi.testclient import TestClient
-
     from api.main import app
+    from fastapi.testclient import TestClient
 
     with TestClient(app) as client:
         reponse = client.get("/health")

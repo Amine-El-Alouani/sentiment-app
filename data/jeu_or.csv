@@ -1,1 +1,21 @@
 text,attendu,difficulte,erreur_connue
+"Commande reçue en deux jours, emballage soigné et produit conforme",POSITIVE,,
+"Le service client a répondu rapidement et a réglé mon problème",POSITIVE,,
+"Très bonne qualité, je suis pleinement satisfait de cet achat",POSITIVE,,
+"Installation simple, notice claire et résultat impeccable",POSITIVE,,
+"Livraison ponctuelle et article exactement comme décrit",POSITIVE,,
+"Pas déçu du tout, je recommande cette boutique",POSITIVE,négation,
+"Le début était prometteur, mais le produit final est inutilisable",NEGATIVE,avis mitigé,
+"Arrivé cassé, bravo le transporteur",NEGATIVE,ironie,
+"Je pensais recevoir mieux pour ce prix, quelle déception",NEGATIVE,attente,
+"Le support m'a ignoré pendant une semaine",NEGATIVE,service client,le vocabulaire du modèle classe à tort ce cas positif
+"Produit solide et agréable à utiliser au quotidien",POSITIVE,,
+"La batterie tient longtemps et la charge est rapide",POSITIVE,,
+"L'article est joli mais le fonctionnement est très décevant",NEGATIVE,avis mitigé,le modèle privilégie le terme positif joli malgré la conclusion négative
+"Aucun souci avec cette commande, tout était parfait",POSITIVE,négation,le modèle interprète à tort souci comme un signal négatif
+"Erreur après erreur, impossible d'utiliser le logiciel",NEGATIVE,autre domaine,
+"Le goût est correct mais l'odeur rend le produit désagréable",NEGATIVE,avis mitigé,
+"Une expérience exceptionnelle, je rachèterai sans hésiter",POSITIVE,,
+"Le colis est arrivé en retard et sans la pièce principale",NEGATIVE,,le modèle privilégie le vocabulaire positif appris sur les commandes
+"Ce n'est pas mauvais, mais ce n'est vraiment pas remarquable",NEGATIVE,négation,
+"Service impeccable au début, puis remboursement refusé sans explication",NEGATIVE,avis mitigé,

@@ -15,9 +15,8 @@ pytestmark = pytest.mark.skipif(not MODELE.exists(), reason="modèle non produit
 @pytest.fixture(scope="module")
 def client():
     """Portée « module » : l'API démarre une fois pour tout le fichier (hypothesis l'exige)."""
-    from fastapi.testclient import TestClient
-
     from api.main import app
+    from fastapi.testclient import TestClient
 
     with TestClient(app) as c:  # le « with » exécute le lifespan : le modèle est chargé
         yield c
