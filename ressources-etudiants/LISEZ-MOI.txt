@@ -1,4 +1,4 @@
-Rattrapage du TP1 au TP5 : ressources pour le binôme
+Du TP1 au TP6 : ressources pour le binôme
 
 1. guide-rattrapage-tp1-tp5.pdf : la démarche complète, commande par commande.
 2. Kit du TP1 : à télécharger sur le dépôt du cours,
@@ -7,7 +7,8 @@ Rattrapage du TP1 au TP5 : ressources pour le binôme
 4. kit-tp3.zip : kit du TP3.
 5. tp4-tests-qualite-kit.zip : kit du TP4.
 6. tp5-interface-kit.zip : kit du TP5.
-7. journal-tp1-tp5.md : le journal de bord à compléter après chaque contrôle,
+7. tp6-packaging-kit.zip : kit du TP6 (le paquet installable).
+8. journal-tp1-tp6.md : le journal de bord à compléter après chaque contrôle,
    à placer dans docs/ de votre dépôt, avec vos captures dans docs/captures/.
 
 Décompressez chaque kit avec Expand-Archive dans C:\IA-DEV, à côté du dépôt (voir la section 2 du guide).
