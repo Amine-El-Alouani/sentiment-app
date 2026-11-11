@@ -22,3 +22,34 @@ ignore_missing_imports = true
 [tool.coverage.report]
 show_missing = true
 skip_empty = true
+
+# --- Packaging (TP6) : le dépôt devient un paquet installable ---------------------------------
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sentiment-app"
+dynamic = ["version"]
+description = "Analyse de sentiment d'avis clients : modèle, API et interface"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115,<0.116",
+    "uvicorn>=0.30,<0.31",
+    "pydantic>=2.9,<3",
+    "scikit-learn>=1.5,<1.6",   # le modèle sauvegardé ne se relit qu'avec cette version
+    "joblib>=1.4,<2",
+]
+
+[project.optional-dependencies]
+ui = ["streamlit>=1.39,<1.40", "pandas>=2.2,<3", "httpx>=0.27,<0.28"]
+
+[project.scripts]
+sentiment = "sentiment_app.cli:main"
+
+[tool.setuptools]
+packages = ["sentiment_app", "api", "ui"]   # ni les tests, ni les données, ni le modèle
+
+[tool.setuptools.dynamic]
+version = { attr = "sentiment_app.__version__" }

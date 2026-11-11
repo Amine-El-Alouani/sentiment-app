@@ -1,0 +1,5 @@
+      - name: Roue installée hors du dépôt (TP6)
+        run: |
+          . .venv/bin/activate && python -m build --wheel
+          python -m venv /tmp/roue && /tmp/roue/bin/pip install dist/*.whl
+          cd /tmp && SENTIMENT_MODELE="$GITHUB_WORKSPACE/models/sentiment.joblib" /tmp/roue/bin/sentiment predict "Livraison rapide, produit conforme, très satisfait"

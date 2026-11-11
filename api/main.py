@@ -1,13 +1,11 @@
 """API HTTP du modèle de sentiment."""
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel, Field, field_validator
 
-from src.predict import charger_modele
+from sentiment_app.predict import charger_modele
 
-RACINE = Path(__file__).resolve().parents[1]
 SEUIL_INDETERMINE = 0.60
 
 
