@@ -10,6 +10,7 @@ from dataclasses import dataclass
 import httpx
 
 API_URL = os.environ.get("API_URL", "http://127.0.0.1:8000")
+API_KEY = os.environ.get("API_KEY", "")
 VERDICTS = {
     "POSITIVE": "Avis positif",
     "NEGATIVE": "Avis négatif",
@@ -32,12 +33,16 @@ class Reponse:
 
 def creer_session() -> httpx.Client:
     """La connexion à l'API. Les tests la remplacent par un client en mémoire."""
-    return httpx.Client(base_url=API_URL, timeout=10)
+    return httpx.Client(
+        base_url=API_URL,
+        timeout=10,
+        headers={"X-API-Key": API_KEY} if API_KEY else {},
+    )
 
 
 def sante(session: httpx.Client) -> Reponse:
     try:
-        r = session.get("/health")
+        r = session.get("/v1/health" if API_KEY else "/health")
     except httpx.TransportError:
         return Reponse(False, message=INJOIGNABLE)
     if r.status_code == 200:
@@ -47,7 +52,7 @@ def sante(session: httpx.Client) -> Reponse:
 
 def predire(session: httpx.Client, texte: str) -> Reponse:
     try:
-        r = session.post("/predict", json={"text": texte})
+        r = session.post("/v1/predict" if API_KEY else "/predict", json={"text": texte})
     except httpx.TransportError:
         return Reponse(False, message=INJOIGNABLE)
     if r.status_code == 200:
@@ -55,6 +60,8 @@ def predire(session: httpx.Client, texte: str) -> Reponse:
         return Reponse(True, label=corps["label"], score=corps["score"])
     if r.status_code == 422:
         return Reponse(False, message=REFUS)
+    if r.status_code in (401, 403):
+        return Reponse(False, message="Clé d'API absente, invalide ou insuffisante.")
     if r.status_code == 503:
         return Reponse(False, message=SANS_MODELE)
     return Reponse(False, message=f"Erreur interne de l'API ({r.status_code}).")

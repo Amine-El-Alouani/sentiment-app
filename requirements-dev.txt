@@ -5,3 +5,5 @@ hypothesis==6.168.3
 ruff==0.16.9
 mypy==2.3.1
 pre-commit==4.6.2
+# TP6 : construire la roue
+build==1.2.2.post1

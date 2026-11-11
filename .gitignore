@@ -40,3 +40,6 @@ htmlcov/
 
 # TP5
 !data/avis_exemple.csv
+
+# Modèle copié dans la roue pendant la construction
+sentiment_app/modele/*.joblib
